@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Login - StudyFlow</title>
+    <link rel="stylesheet" href="css/admin-login.css"> <!-- Changed to index.css -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/favicon_io/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon_io/favicon.ico">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<body>
+    <div class="aurora-background-v5">
+        <div class="aurora-shape aurora-1"></div>
+        <div class="aurora-shape aurora-2"></div>
+        <div class="aurora-shape aurora-3"></div>
+    </div>
+
+    <div class="admin-login-wrapper">
+        <div class="admin-login-panel">
+            <div class="admin-auth-header">
+                <h1 id="auth-title">Instructor Login</h1>
+                <p id="auth-subtitle">Securely sign in to manage StudyFlow.</p>
+            </div>
+
+            <form id="admin-login-form" class="admin-auth-form">
+                <div class="form-group">
+                    <label for="login-username">Admin Username</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user-shield"></i>
+                        <input type="text" id="login-username" name="username" placeholder="Enter your username"
+                            required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="login-password" name="password" placeholder="Enter your password"
+                            required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary admin-btn-auth">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>StudyFlow</span>
+                </button>
+            </form>
+
+            <div id="loading-spinner" class="loading-spinner-container hidden">
+                <div class="spinner"></div>
+            </div>
+            <div id="error-message" class="error-message-container hidden">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="error-text"></span>
+            </div>
+        </div>
+    </div>
+    <script src="js/admin-auth.js"></script>
+</body>
+
+</html>

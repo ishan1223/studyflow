@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - Learning Dashboard</title>
+    <link rel="stylesheet" href="css/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/favicon_io/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon_io/favicon.ico">
+    <meta name="theme-color" content="#ffffff">
+    
+    <style>
+        #ob-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 9999;
+          background: rgba(0,0,0,0.65);
+          display: none;
+          align-items: center;
+          justify-content: center;
+        }
+
+        #ob-overlay.ob-visible {
+          display: flex;
+        }
+
+        #ob-modal {
+          background: #FFFFFF;
+          border-radius: 1.5rem;
+          padding: 2.5rem;
+          width: 90%;
+          max-width: 580px;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 24px 80px rgba(0,0,0,0.18);
+          position: relative;
+        }
+
+        .ob-stepper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0;
+          margin-bottom: 2rem;
+        }
+
+        .ob-dot {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: 2px solid #ECE9F6;
+          background: #FFFFFF;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: #64748B;
+          transition: all 0.3s ease;
+          z-index: 1;
+        }
+
+        .ob-dot.ob-done {
+          background: #7C3AED;
+          border-color: #7C3AED;
+          color: #FFFFFF;
+        }
+
+        .ob-dot.ob-active {
+          background: #7C3AED;
+          border-color: #7C3AED;
+          color: #FFFFFF;
+          transform: scale(1.15);
+          box-shadow: 0 0 0 4px rgba(124,58,237,0.18);
+        }
+
+        .ob-line {
+          flex: 1;
+          height: 2px;
+          background: #ECE9F6;
+          max-width: 60px;
+          transition: background 0.3s ease;
+        }
+
+        .ob-line.ob-done {
+          background: #7C3AED;
+        }
+
+        .ob-step {
+          display: none;
+        }
+
+        .ob-step.ob-step-active {
+          display: block;
+        }
+
+        .ob-heading {
+          font-size: 1.4rem;
+          font-weight: 800;
+          color: #1E1B2E;
+          margin-bottom: 0.4rem;
+        }
+
+        .ob-subtext {
+          font-size: 0.88rem;
+          color: #64748B;
+          margin-bottom: 1.5rem;
+        }
+
+        .ob-input {
+          width: 100%;
+          padding: 0.65rem 1rem;
+          border: 1.5px solid #ECE9F6;
+          border-radius: 0.5rem;
+          font-family: Inter, sans-serif;
+          font-size: 0.9rem;
+          color: #1E1B2E;
+          background: #FFFFFF;
+          outline: none;
+          transition: border-color 0.2s;
+          margin-bottom: 1rem;
+          box-sizing: border-box;
+        }
+
+        .ob-input:focus {
+          border-color: #7C3AED;
+        }
+
+        .ob-select {
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 0.8rem center;
+          background-size: 1em;
+        }
+
+        .ob-label {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #64748B;
+          display: block;
+          margin-bottom: 0.3rem;
+          text-align: left;
+        }
+
+        .ob-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.75rem;
+        }
+
+        .ob-type-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.75rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .ob-type-card {
+          border: 2px solid #ECE9F6;
+          border-radius: 1rem;
+          padding: 1.25rem 1rem;
+          cursor: pointer;
+          text-align: center;
+          transition: all 0.2s;
+          background: #FFFFFF;
+        }
+
+        .ob-type-card:hover {
+          border-color: #7C3AED;
+          background: rgba(124,58,237,0.04);
+        }
+
+        .ob-type-card.ob-selected {
+          border-color: #7C3AED;
+          background: rgba(124,58,237,0.07);
+        }
+
+        .ob-type-card .ob-type-icon {
+          font-size: 1.8rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .ob-type-card .ob-type-title {
+          font-size: 0.88rem;
+          font-weight: 700;
+          color: #1E1B2E;
+        }
+
+        .ob-type-card .ob-type-sub {
+          font-size: 0.72rem;
+          color: #64748B;
+          margin-top: 0.2rem;
+        }
+
+        .ob-chips-wrap {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .ob-chip {
+          padding: 0.35rem 0.9rem;
+          border: 1.5px solid #ECE9F6;
+          border-radius: 999px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          cursor: pointer;
+          color: #64748B;
+          transition: all 0.15s;
+          background: #FFFFFF;
+        }
+
+        .ob-chip:hover {
+          border-color: #7C3AED;
+          color: #7C3AED;
+        }
+
+        .ob-chip.ob-chip-selected {
+          background: #7C3AED;
+          color: #FFFFFF;
+          border-color: #7C3AED;
+        }
+
+        .ob-chip-scroll {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          padding-bottom: 0.4rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .ob-add-row {
+          display: flex;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .ob-add-row input {
+          flex: 1;
+        }
+
+        .ob-add-btn {
+          padding: 0 1rem;
+          background: rgba(124,58,237,0.1);
+          color: #7C3AED;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 700;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .ob-nav {
+          display: flex;
+          gap: 0.75rem;
+          justify-content: space-between;
+          margin-top: 1.75rem;
+        }
+
+        .ob-btn-back {
+          padding: 0.65rem 1.4rem;
+          border: 1.5px solid #ECE9F6;
+          border-radius: 0.5rem;
+          background: transparent;
+          color: #64748B;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: Inter, sans-serif;
+          font-size: 0.9rem;
+        }
+
+        .ob-btn-next {
+          flex: 1;
+          padding: 0.65rem 1.4rem;
+          background: #7C3AED;
+          color: #FFFFFF;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 700;
+          cursor: pointer;
+          font-family: Inter, sans-serif;
+          font-size: 0.9rem;
+          transition: opacity 0.2s;
+        }
+
+        .ob-btn-next:disabled {
+          opacity: 0.45;
+          cursor: not-allowed;
+        }
+
+        .ob-skip {
+          position: absolute;
+          top: 1.5rem;
+          right: 1.75rem;
+          font-size: 0.82rem;
+          color: #64748B;
+          cursor: pointer;
+          background: none;
+          border: none;
+          font-family: Inter, sans-serif;
+        }
+
+        .ob-skip:hover {
+          color: #7C3AED;
+        }
+
+        .ob-completion {
+          text-align: center;
+          padding: 1rem 0;
+        }
+
+        .ob-completion .ob-emoji {
+          font-size: 3.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .ob-completion h2 {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: #1E1B2E;
+          margin-bottom: 1.5rem;
+        }
+
+        .ob-summary-card {
+          background: #F8F7FE;
+          border: 1px solid #ECE9F6;
+          border-radius: 1rem;
+          padding: 1.25rem 1.5rem;
+          margin-bottom: 1.5rem;
+          text-align: left;
+        }
+
+        .ob-summary-row {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          padding: 0.4rem 0;
+          font-size: 0.9rem;
+          color: #1E1B2E;
+          font-weight: 500;
+        }
+
+        .ob-xp-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          background: rgba(124,58,237,0.1);
+          color: #7C3AED;
+          border-radius: 999px;
+          padding: 0.3rem 0.8rem;
+          font-weight: 700;
+          font-size: 0.82rem;
+        }
+
+        /* Confetti */
+        .ob-confetti-piece {
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          border-radius: 2px;
+          top: -10px;
+          animation: ob-fall linear forwards;
+          z-index: 10000;
+        }
+
+        @media (max-width: 600px) {
+          #ob-modal {
+            width: 100%;
+            max-width: 100%;
+            min-height: 100vh;
+            border-radius: 0;
+            padding: 1.5rem;
+          }
+
+          .ob-type-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .ob-row {
+            grid-template-columns: 1fr;
+          }
+        }
+    </style>
+</head>
+
+<body class="app-body">
+
+    <!-- SIDEBAR -->
+    <aside style="width:240px;background:#1E1B4B;min-height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:200;">
+        <a href="home.html" style="padding:24px 20px 20px;display:flex;align-items:center;gap:10px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:8px;">
+            <div style="width:36px;height:36px;background:#7C3AED;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:1rem;flex-shrink:0;"><i class="fas fa-graduation-cap"></i></div>
+            <span style="font-size:1.15rem;font-weight:800;color:white;">StudyFlow</span>
+        </a>
+        <div style="padding:4px 12px;display:flex;flex-direction:column;gap:2px;flex:1;">
+            <a href="home.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-home" style="width:18px;"></i> Home</a>
+            <a href="hub.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-th-large" style="width:18px;"></i> Hub</a>
+            <a href="notes.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-sticky-note" style="width:18px;"></i> Notes</a>
+            <a href="progress.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-chart-line" style="width:18px;"></i> Progress</a>
+            <a href="tasks.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-calendar-alt" style="width:18px;"></i> Task Scheduler</a>
+            <a href="profile.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-user" style="width:18px;"></i> Profile</a>
+        </div>
+        <div style="padding:12px;border-top:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;">
+                <div id="sb-avatar" style="width:34px;height:34px;border-radius:50%;background:#7C3AED;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;">?</div>
+                <div><div id="sb-name" style="font-size:0.85rem;font-weight:700;color:white;">...</div><div style="font-size:0.72rem;color:#C4B5FD;">Student</div></div>
+            </div>
+            <button onclick="logoutApp()" style="width:100%;margin-top:8px;padding:9px 12px;background:#DC2626;color:white;border:none;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:0.82rem;cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center;">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- TOP BAR (replaces old navbar-container) -->
+    <header class="app-topbar" style="margin-left:240px;">
+        <a href="index.html" class="app-topbar-logo">📚 StudyFlow</a>
+        <div class="app-topbar-right">
+            <div class="stat-chip-streak">
+                🔥 <span id="topbar-streak">0</span> day streak
+            </div>
+            <div class="stat-chip-xp">
+                ⭐ <span id="topbar-xp">0</span> XP
+            </div>
+            <a href="hub.html" class="btn btn-outline-v5">
+                <i class="fas fa-th"></i><span class="btn-text">Hub</span>
+            </a>
+            <a href="profile.html" class="btn btn-outline-v5">
+                <i class="fas fa-user"></i><span class="btn-text">Profile</span>
+            </a>
+            <button id="logout-btn" class="btn btn-outline-v5" onclick="logoutApp()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="btn-text">Logout</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main" style="margin-left:240px;">
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view active">
+            <!-- Greeting -->
+            <div class="app-greeting">
+                <h1>
+                    <span id="time-greeting">Good morning</span>,
+                    <span id="username-display">Learner</span>! ☀️
+                </h1>
+                <p>Let's make today count.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- LEFT: Quest Card -->
+                <div class="quest-card card-v5">
+                    <div class="quest-label">Today's Quest</div>
+                    <h3 id="quest-title">Loading...</h3>
+                    <div id="quest-content">
+                        <div class="quest-placeholder">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <h4>Loading your session...</h4>
+                        </div>
+                    </div>
+                    <div class="quest-actions">
+                        <button id="next-question-btn" class="btn btn-primary btn-large">
+                            <i class="fas fa-play"></i> Start Session
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Side Panel -->
+                <div class="side-panel">
+                    <!-- Stats Card -->
+                    <div class="progress-card card-v5">
+                        <h3>Your Stats</h3>
+                        <div class="user-stats-app">
+                            <div class="stat-item">
+                                <div class="stat-item-left">
+                                    <i class="fas fa-star"></i> Total XP
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="xp-count">0</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-item-left">
+                                    <i class="fas fa-fire"></i> Day Streak
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="streak-count">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Achievements Card -->
+                    <div class="achievements-card card-v5">
+                        <h3>🏆 Achievements</h3>
+                        <div class="achievements-list" id="achievements-list">
+                            <div class="achievement-placeholder">
+                                <i class="fas fa-trophy"></i>
+                                <p>Answer questions to unlock achievements!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question View -->
+        <div id="question-view" class="view">
+            <div class="question-view-header">
+                <button id="back-to-dashboard-btn" class="btn btn-outline-v5">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </button>
+            </div>
+            <div class="question-container">
+                 <div class="question-card card-v5">
+                    <div class="question-meta">
+                        <div class="difficulty-display">
+                            <span id="difficulty-number">Lvl 1</span>
+                            <div id="difficulty-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-text" id="question-text">
+                        <p>Loading your personalized question...</p>
+                    </div>
+
+                    <div class="answer-section">
+                        <div class="form-group">
+                            <label for="user-answer" class="sr-only">Your Answer:</label>
+                            <textarea id="user-answer" placeholder="Type your answer here..." rows="4"></textarea>
+                        </div>
+                        <div class="answer-actions">
+                            <button id="submit-answer-btn" class="btn btn-primary"><i class="fas fa-paper-plane"></i>Submit</button>
+                            <button id="skip-question-btn" class="btn btn-outline-v5"><i class="fas fa-forward"></i>Skip Question</button>
+                        </div>
+                    </div>
+                    <div id="answer-feedback" class="answer-feedback hidden">
+                        <div class="feedback-content">
+                            <div class="feedback-icon" id="feedback-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="feedback-text">
+                                <h4 id="feedback-title">Great job!</h4>
+                                <p id="feedback-message">That's correct! You're doing amazing.</p>
+                                <div class="feedback-score"><span>Similarity Score: </span><span id="similarity-score">95%</span></div>
+                            </div>
+                        </div>
+                        <button id="continue-btn" class="btn btn-primary"><i class="fas fa-arrow-right"></i>Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals and Overlays -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner-large"></div>
+            </div>
+            <p id="loading-text">Preparing your personalized question...</p>
+        </div>
+    </div>
+    <div id="error-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Oops! Something went wrong</h3><button id="error-modal-close-btn" class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p id="error-modal-text">We encountered an issue. Please try again.</p>
+            </div>
+            <div class="modal-footer"><button id="error-modal-confirm-btn" class="btn btn-primary">Got it</button></div>
+        </div>
+    </div>
+    <div id="celebration" class="celebration hidden">
+        <div class="confetti"></div>
+        <div class="celebration-text">
+            <h2 id="celebration-title">Goal Reached! 🎯</h2>
+            <p id="celebration-message">You earned <span id="xp-earned">+10</span> XP!</p>
+        </div>
+    </div>
+
+    <!-- ONBOARDING MODAL -->
+    <div id="ob-overlay">
+      <div id="ob-modal">
+
+        <button class="ob-skip" id="ob-skip-btn">Skip for now &rarr;</button>
+
+        <!-- Stepper: 4 dots with 3 lines between them -->
+        <div class="ob-stepper">
+          <div class="ob-dot ob-active" id="ob-dot-1">1</div>
+          <div class="ob-line" id="ob-line-1"></div>
+          <div class="ob-dot" id="ob-dot-2">2</div>
+          <div class="ob-line" id="ob-line-2"></div>
+          <div class="ob-dot" id="ob-dot-3">3</div>
+          <div class="ob-line" id="ob-line-3"></div>
+          <div class="ob-dot" id="ob-dot-4">4</div>
+        </div>
+
+        <!-- STEP 1: Name -->
+        <div class="ob-step ob-step-active" id="ob-step-1">
+          <div class="ob-heading">&nbsp;First things first &mdash;</div>
+          <div class="ob-heading">what should we call you?</div>
+          <div class="ob-subtext">
+            We'll use this to personalize your dashboard.
+          </div>
+          <label class="ob-label">Your name</label>
+          <input class="ob-input" id="ob-name-input"
+                 type="text" placeholder="e.g. Aarush"
+                 maxlength="60" autocomplete="given-name">
+          <div class="ob-nav">
+            <button class="ob-btn-next" id="ob-next-1"
+                    disabled>Continue &rarr;</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Student type -->
+        <div class="ob-step" id="ob-step-2">
+          <div class="ob-heading">Which best describes you?</div>
+          <div class="ob-subtext">
+            We'll tailor everything to your situation.
+            You can change this later in Settings.
+          </div>
+          <div class="ob-type-grid">
+            <div class="ob-type-card" data-type="college">
+              <div class="ob-type-icon">🎓</div>
+              <div class="ob-type-title">College / University</div>
+              <div class="ob-type-sub">
+                Semester-based subjects &amp; assignments
+              </div>
+            </div>
+            <div class="ob-type-card" data-type="competitive">
+              <div class="ob-type-icon">🎯</div>
+              <div class="ob-type-title">Competitive Exam</div>
+              <div class="ob-type-sub">
+                JEE &middot; UPSC &middot; GATE &middot; CAT or any exam
+              </div>
+            </div>
+            <div class="ob-type-card" data-type="self_learner">
+              <div class="ob-type-icon">🌱</div>
+              <div class="ob-type-title">Self Learner</div>
+              <div class="ob-type-sub">
+                Learning at my own pace
+              </div>
+            </div>
+          </div>
+          <div class="ob-nav">
+            <button class="ob-btn-back" id="ob-back-2">&larr; Back</button>
+            <button class="ob-btn-next" id="ob-next-2"
+                    disabled>Continue &rarr;</button>
+          </div>
+        </div>
+
+        <!-- STEP 3A: College details -->
+        <div class="ob-step" id="ob-step-3-college">
+          <div class="ob-heading">🏫 Tell us about your college</div>
+          <div class="ob-subtext">
+            Helps us suggest relevant subjects and content.
+          </div>
+          <label class="ob-label">College / University name</label>
+          <input class="ob-input" id="ob-college-input" type="text"
+                 placeholder="e.g. PSIT Kanpur, Delhi University...">
+          <div class="ob-row">
+            <div>
+              <label class="ob-label">Degree</label>
+              <select class="ob-input ob-select" id="ob-degree-input">
+                <option value="">Select degree</option>
+                <option value="B.Tech">B.Tech</option>
+                <option value="BCA">BCA</option>
+                <option value="MCA">MCA</option>
+                <option value="MBA">MBA</option>
+                <option value="B.Sc">B.Sc</option>
+                <option value="M.Tech">M.Tech</option>
+                <option value="BA">BA</option>
+                <option value="MA">MA</option>
+                <option value="PhD">PhD</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="ob-label">Year</label>
+              <select class="ob-input ob-select" id="ob-year-input">
+                <option value="">Select year</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+                <option value="Postgraduate">Postgraduate</option>
+              </select>
+            </div>
+          </div>
+          <label class="ob-label">Branch / Stream (optional)</label>
+          <input class="ob-input" id="ob-branch-input" type="text"
+                 placeholder="e.g. Computer Science &amp; Engineering">
+          <div class="ob-nav">
+            <button class="ob-btn-back" id="ob-back-3c">&larr; Back</button>
+            <button class="ob-btn-next" id="ob-next-3c">Continue &rarr;</button>
+          </div>
+        </div>
+
+        <!-- STEP 3B: Competitive exam details -->
+        <div class="ob-step" id="ob-step-3-competitive">
+          <div class="ob-heading">🎯 Which exam are you preparing for?</div>
+          <div class="ob-subtext">
+            Type your exam or pick from popular ones below.
+          </div>
+          <label class="ob-label">Exam name</label>
+          <input class="ob-input" id="ob-exam-input" type="text"
+                 placeholder="e.g. GATE, JEE, UPSC, CAT...">
+          <div class="ob-chip-scroll" id="ob-exam-chips">
+            <span class="ob-chip" data-val="JEE Mains">JEE Mains</span>
+            <span class="ob-chip" data-val="JEE Advanced">JEE Advanced</span>
+            <span class="ob-chip" data-val="NEET">NEET</span>
+            <span class="ob-chip" data-val="GATE">GATE</span>
+            <span class="ob-chip" data-val="UPSC CSE">UPSC CSE</span>
+            <span class="ob-chip" data-val="CAT">CAT</span>
+            <span class="ob-chip" data-val="GMAT">GMAT</span>
+            <span class="ob-chip" data-val="GRE">GRE</span>
+            <span class="ob-chip" data-val="SSC CGL">SSC CGL</span>
+            <span class="ob-chip" data-val="CUET">CUET</span>
+            <span class="ob-chip" data-val="IELTS">IELTS</span>
+          </div>
+          <label class="ob-label">
+            Target exam date (optional but recommended)
+          </label>
+          <input class="ob-input" id="ob-examdate-input" type="date">
+          <div class="ob-nav">
+            <button class="ob-btn-back" id="ob-back-3b">&larr; Back</button>
+            <button class="ob-btn-next" id="ob-next-3b"
+                    disabled>Continue &rarr;</button>
+          </div>
+        </div>
+
+        <!-- STEP 3C: Self learner details -->
+        <div class="ob-step" id="ob-step-3-self">
+          <div class="ob-heading">🌱 What are you learning?</div>
+          <div class="ob-subtext">
+            Type your topic or pick from popular areas below.
+          </div>
+          <label class="ob-label">Topic / Skill</label>
+          <input class="ob-input" id="ob-topic-input" type="text"
+                 placeholder="e.g. Web Development, Machine Learning...">
+          <div class="ob-chip-scroll" id="ob-topic-chips">
+            <span class="ob-chip" data-val="Programming">Programming</span>
+            <span class="ob-chip" data-val="Data Science">Data Science</span>
+            <span class="ob-chip" data-val="Design">Design</span>
+            <span class="ob-chip" data-val="Languages">Languages</span>
+            <span class="ob-chip" data-val="Finance">Finance</span>
+            <span class="ob-chip" data-val="Marketing">Marketing</span>
+            <span class="ob-chip" data-val="Photography">Photography</span>
+            <span class="ob-chip" data-val="Music">Music</span>
+          </div>
+          <label class="ob-label">Why are you learning this? (optional)</label>
+          <div class="ob-chips-wrap" id="ob-reason-chips">
+            <span class="ob-chip" data-val="career">💼 Career switch</span>
+            <span class="ob-chip" data-val="skill">📈 Skill upgrade</span>
+            <span class="ob-chip" data-val="growth">🎓 Personal growth</span>
+            <span class="ob-chip" data-val="curiosity">🤩 Pure curiosity</span>
+          </div>
+          <div class="ob-nav">
+            <button class="ob-btn-back" id="ob-back-3s">&larr; Back</button>
+            <button class="ob-btn-next" id="ob-next-3s"
+                    disabled>Continue &rarr;</button>
+          </div>
+        </div>
+
+        <!-- STEP 4A: College subjects -->
+        <div class="ob-step" id="ob-step-4-college">
+          <div class="ob-heading">📖 What are you studying this semester?</div>
+          <div class="ob-subtext">Select all that apply · max 8</div>
+          <div class="ob-chips-wrap" id="ob-subject-chips">
+            <span class="ob-chip" data-val="DSA">DSA</span>
+            <span class="ob-chip" data-val="DBMS">DBMS</span>
+            <span class="ob-chip" data-val="Operating Systems">OS</span>
+            <span class="ob-chip" data-val="Computer Networks">CN</span>
+            <span class="ob-chip" data-val="OOP Java">OOP Java</span>
+            <span class="ob-chip" data-val="Mathematics">Maths</span>
+            <span class="ob-chip" data-val="Software Engineering">SE</span>
+            <span class="ob-chip" data-val="Theory of Computation">TOC</span>
+            <span class="ob-chip" data-val="Computer Architecture">COA</span>
+            <span class="ob-chip" data-val="Web Development">Web Dev</span>
+            <span class="ob-chip" data-val="Machine Learning">ML</span>
+          </div>
+          <div class="ob-add-row">
+            <input id="ob-subject-custom" type="text"
+                   class="ob-input" style="margin-bottom:0"
+                   placeholder="Add a subject not listed...">
+            <button class="ob-add-btn" id="ob-subject-add-btn">+ Add</button>
+          </div>
+          <div class="ob-nav">
+            <button class="ob-btn-back" id="ob-back-4c">&larr; Back</button>
+            <button class="ob-btn-next" id="ob-next-4c"
+                    disabled>Finish Setup &rarr;</button>
+          </div>
+        </div>
+
+        <!-- STEP 4B: Competitive topics -->
+        <div class="ob-step" id="ob-step-4-competitive">
+          <div class="ob-heading">📂 Which areas does your exam cover?</div>
+          <div class="ob-subtext">Select your focus areas · max 8</div>
+          <div class="ob-chips-wrap" id="ob-topic-area-chips">
+            <span class="ob-chip" data-val="Data Structures &amp; Algorithms">DS&amp;A</span>
+            <span class="ob-chip" data-val="Operating Systems">OS</span>
+            <span class="ob-chip" data-val="DBMS">DBMS</span>
+            <span class="ob-chip" data-val="Computer Networks">CN</span>
+            <span class="ob-chip" data-val="Mathematics">Maths</span>
+            <span class="ob-chip" data-val="Theory of Computation">TOC</span>
+            <span class="ob-chip" data-val="Computer Architecture">COA</span>
+            <span class="ob-chip" data-val="Aptitude">Aptitude</span>
+            <span class="ob-chip" data-val="English">English</span>
+            <span class="ob-chip" data-val="General Knowledge">GK</span>
+            <span class="ob-chip" data-val="Current Affairs">Current Affairs</span>
+            <span class="ob-chip" data-val="Physics">Physics</span>
+            <span class="ob-chip" data-val="Chemistry">Chemistry</span>
+            <span class="ob-chip" data-val="Biology">Biology</span>
+          </div>
+          <div class="ob-add-row">
+            <input id="ob-topic-custom" type="text"
+                   class="ob-input" style="margin-bottom:0"
+                   placeholder="Add a topic not listed...">
+            <button class="ob-add-btn" id="ob-topic-add-btn">+ Add</button>
+          </div>
+          <div class="ob-nav">
+            <button class="ob-btn-back" id="ob-back-4b">&larr; Back</button>
+            <button class="ob-btn-next" id="ob-next-4b"
+                    disabled>Finish Setup &rarr;</button>
+          </div>
+        </div>
+
+        <!-- STEP 4C: Self learner goal -->
+        <div class="ob-step" id="ob-step-4-self">
+          <div class="ob-heading">⚡ Last step — set your intentions</div>
+          <div class="ob-subtext">
+            These help us keep you on track. All optional.
+          </div>
+          <label class="ob-label">What's your main goal?</label>
+          <input class="ob-input" id="ob-goal-input" type="text"
+                 placeholder="e.g. Build 3 projects in 90 days...">
+          <label class="ob-label">How much time can you study daily?</label>
+          <div class="ob-chips-wrap" id="ob-time-chips">
+            <span class="ob-chip" data-val="15">15 min</span>
+            <span class="ob-chip" data-val="30">30 min</span>
+            <span class="ob-chip ob-chip-selected" data-val="60">1 hour</span>
+            <span class="ob-chip" data-val="120">2 hours</span>
+            <span class="ob-chip" data-val="180">3+ hours</span>
+          </div>
+          <div class="ob-nav">
+            <button class="ob-btn-back" id="ob-back-4s">&larr; Back</button>
+            <button class="ob-btn-next" id="ob-next-4s">Finish Setup &rarr;</button>
+          </div>
+        </div>
+
+        <!-- COMPLETION -->
+        <div class="ob-step" id="ob-step-done">
+          <div class="ob-completion">
+            <div class="ob-emoji">🎉</div>
+            <h2>You're all set, <span id="ob-done-name">there</span>!</h2>
+            <div class="ob-summary-card" id="ob-summary-card">
+              <!-- filled by JS -->
+            </div>
+            <div style="margin-bottom:1.25rem">
+              <span class="ob-xp-badge">⚡ +50 XP for completing setup</span>
+            </div>
+            <div style="margin-bottom:1.5rem;font-size:0.88rem;color:#64748B">
+              🔥 Your streak starts today
+            </div>
+            <button class="ob-btn-next" id="ob-done-btn"
+                    style="width:100%" disabled>
+              Go to my Dashboard &rarr;
+            </button>
+          </div>
+        </div>
+
+      </div><!-- end #ob-modal -->
+    </div><!-- end #ob-overlay -->
+
+    <!-- Accessibility Controls -->
+    <div class="accessibility-controls-fab">
+        <button id="accessibility-fab-toggle" class="btn btn-primary" aria-label="Accessibility Settings" aria-expanded="false">
+            <i class="fas fa-universal-access"></i>
+        </button>
+        <div class="accessibility-options hidden" id="accessibility-options-popup">
+            <div class="control-group">
+                <label><i class="fas fa-font"></i> Font Size</label>
+                <div class="font-controls">
+                    <button id="decrease-font-btn" class="font-control-btn" aria-label="Decrease font size"><i class="fas fa-minus"></i></button>
+                    <button id="increase-font-btn" class="font-control-btn" aria-label="Increase font size"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/app.js"></script>
+
+    <!-- Time-based greeting and sync -->
+    <script>
+    (function() {
+        // Time greeting
+        const hour = new Date().getHours();
+        const el = document.getElementById('time-greeting');
+        if (el) {
+            if (hour >= 5 && hour < 12) el.textContent = 'Good morning';
+            else if (hour >= 12 && hour < 17) el.textContent = 'Good afternoon';
+            else el.textContent = 'Good evening';
+        }
+
+        // Sync top bar chips from stat card values
+        // Uses MutationObserver to detect when JS updates the values
+        const xpMain = document.getElementById('xp-count');
+        const streakMain = document.getElementById('streak-count');
+        const xpTop = document.getElementById('topbar-xp');
+        const streakTop = document.getElementById('topbar-streak');
+
+        if (xpMain && xpTop) {
+            new MutationObserver(() => {
+                xpTop.textContent = xpMain.textContent;
+            }).observe(xpMain, { childList: true, characterData: true, subtree: true });
+            // Initial sync
+            xpTop.textContent = xpMain.textContent;
+        }
+        if (streakMain && streakTop) {
+            new MutationObserver(() => {
+                streakTop.textContent = streakMain.textContent;
+            }).observe(streakMain, { childList: true, characterData: true, subtree: true });
+            // Initial sync
+            streakTop.textContent = streakMain.textContent;
+        }
+
+        // Initialize sidebar with user info
+        const username = localStorage.getItem('username') || 'Learner';
+        const sbName = document.getElementById('sb-name');
+        const sbAvatar = document.getElementById('sb-avatar');
+        if (sbName) sbName.textContent = username;
+        if (sbAvatar) sbAvatar.textContent = username.charAt(0).toUpperCase();
+    })();
+
+    function logoutApp() {
+        localStorage.removeItem('studyflowToken');
+        localStorage.removeItem('username');
+        localStorage.removeItem('sf_onboarding');
+        window.location.href = 'auth.html';
+    }
+    </script>
+</body>
+
+</html>

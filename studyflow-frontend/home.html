@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow – Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent: #7C3AED;
+            --accent-light: #EDE9FE;
+            --accent-dark: #5B21B6;
+            --accent-glow: rgba(124,58,237,0.12);
+            --success: #059669;
+            --warning: #D97706;
+            --error: #DC2626;
+            --bg: #F5F4FB;
+            --card: #FFFFFF;
+            --sidebar-bg: #1E1B4B;
+            --sidebar-text: #C4B5FD;
+            --sidebar-active: #7C3AED;
+            --text: #1E1B4B;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --font: 'Plus Jakarta Sans', sans-serif;
+            --topbar-height: 68px;
+            --sidebar-width: 240px;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+        }
+
+        .sidebar-logo {
+            padding: 24px 20px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 8px;
+        }
+        .sidebar-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .sidebar-logo-text {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.01em;
+        }
+
+        .sidebar-section-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(196,181,253,0.45);
+            padding: 12px 20px 6px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 4px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--sidebar-text);
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .nav-link i { width: 18px; font-size: 0.9rem; }
+        .nav-link:hover { background: rgba(255,255,255,0.06); color: white; }
+        .nav-link.active { background: var(--accent); color: white; }
+        .nav-link.coming-soon {
+            opacity: 0.45;
+            cursor: default;
+        }
+        .nav-link.coming-soon:hover { background: transparent; color: var(--sidebar-text); }
+        .soon-badge {
+            margin-left: auto;
+            font-size: 0.62rem;
+            font-weight: 700;
+            background: rgba(196,181,253,0.15);
+            color: var(--sidebar-text);
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.04em;
+        }
+
+        .sidebar-bottom {
+            padding: 12px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 4px;
+        }
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-tag {
+            font-size: 0.72rem;
+            color: var(--sidebar-text);
+        }
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            color: var(--sidebar-text);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            font-family: var(--font);
+        }
+        .logout-btn:hover { background: rgba(220,38,38,0.15); color: #FCA5A5; }
+
+        /* ── MAIN LAYOUT ── */
+        .main-wrap {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            height: var(--topbar-height);
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar-left h2 {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+        .topbar-left p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .stat-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 7px 14px;
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .stat-chip i { color: var(--accent); }
+        .stat-chip.fire i { color: #F97316; }
+        .stat-chip.star i { color: #FBBF24; }
+
+        /* ── PAGE CONTENT ── */
+        .page-content {
+            padding: 32px;
+            flex: 1;
+        }
+
+        /* Section header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+        .section-subtitle {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* ── SUBJECT GRID ── */
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .subject-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .subject-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--subject-color, var(--accent));
+        }
+        .subject-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border-color: transparent;
+        }
+        .subject-icon-wrap {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .subject-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.3;
+        }
+        .subject-chapters {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .subject-progress-bar {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .subject-progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: var(--subject-color, var(--accent));
+            width: 0%;
+            transition: width 0.6s ease;
+        }
+
+        /* ── QUICK ACTIONS ── */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        .quick-card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .quick-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+        .quick-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        .quick-label { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+        .quick-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; }
+
+        /* ── TODAY'S QUEST ── */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+        }
+        .quest-card {
+            background: linear-gradient(135deg, var(--accent) 0%, #A855F7 100%);
+            border-radius: 16px;
+            padding: 28px;
+            color: white;
+        }
+        .quest-eyebrow {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+        .quest-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+        .quest-desc { font-size: 0.85rem; opacity: 0.85; margin-bottom: 20px; line-height: 1.5; }
+        .quest-progress-wrap { margin-bottom: 20px; }
+        .quest-progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            opacity: 0.8;
+            margin-bottom: 6px;
+        }
+        .quest-progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .quest-progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+        .quest-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: var(--accent);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-family: var(--font);
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .quest-btn:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+        /* ── ACHIEVEMENTS ── */
+        .achievements-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+        .ach-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+        .ach-list { display: flex; flex-direction: column; gap: 10px; }
+        .ach-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: var(--bg);
+            border-radius: 10px;
+        }
+        .ach-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: var(--accent-light);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .ach-name { font-size: 0.83rem; font-weight: 700; color: var(--text); }
+        .ach-desc { font-size: 0.73rem; color: var(--text-secondary); margin-top: 1px; }
+        .ach-empty {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.83rem;
+        }
+        .ach-empty i { font-size: 1.5rem; display: block; margin-bottom: 8px; opacity: 0.4; }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.2s infinite;
+            border-radius: 8px;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        @media (max-width: 1100px) {
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
+            .bottom-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar.open { transform: translateX(0); }
+            .main-wrap { margin-left: 0; }
+            .subject-grid { grid-template-columns: repeat(2, 1fr); }
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
+            .page-content { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <a href="home.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <span class="sidebar-logo-text">StudyFlow</span>
+    </a>
+
+    <nav class="sidebar-nav">
+        <a href="home.html" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+        <a href="hub.html" class="nav-link"><i class="fas fa-th-large"></i> Hub</a>
+        <a href="notes.html" class="nav-link"><i class="fas fa-sticky-note"></i> Notes</a>
+        <a href="progress.html" class="nav-link"><i class="fas fa-chart-line"></i> Progress</a>
+        <a href="tasks.html#tasks" class="nav-link"><i class="fas fa-calendar-alt"></i> Task Scheduler</a>
+        <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <div class="user-pill">
+            <div class="user-avatar" id="sb-avatar">?</div>
+            <div class="user-info">
+                <div class="user-name" id="sb-name">Loading...</div>
+                <div class="user-tag" id="sidebar-tag">Student</div>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Log out
+        </button>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <h2 id="greeting-text">Good morning! 👋</h2>
+            <p id="greeting-sub">Let's make today count.</p>
+        </div>
+        <div class="topbar-right">
+            <div class="stat-chip fire"><i class="fas fa-fire"></i> <span id="topbar-streak">0</span> day streak</div>
+            <div class="stat-chip star"><i class="fas fa-star"></i> <span id="topbar-xp">0</span> XP</div>
+        </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <main class="page-content">
+
+        <!-- My Subjects -->
+        <div class="section-header">
+            <div>
+                <div class="section-title">My Subjects</div>
+                <div class="section-subtitle">Click a subject to explore chapters, or add more below</div>
+            </div>
+            <button onclick="openSubjectPicker()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#7C3AED;color:white;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;">
+                <i class="fas fa-plus"></i> Add Subject
+            </button>
+        </div>
+        <div class="subject-grid" id="subject-grid">
+            <!-- Loaded by JS -->
+        </div>
+
+        <!-- Bottom grid: Quest + Achievements -->
+        <div class="bottom-grid">
+            <div class="quest-card">
+                <div class="quest-eyebrow">⚡ Today's Quest</div>
+                <div class="quest-title" id="quest-title">Loading...</div>
+                <div class="quest-desc" id="quest-desc">Fetching your daily goal...</div>
+                <div class="quest-progress-wrap" id="quest-progress-wrap">
+                    <div class="quest-progress-labels">
+                        <span id="quest-progress-text">0 / 0</span>
+                        <span id="quest-pct">0%</span>
+                    </div>
+                    <div class="quest-progress-bar">
+                        <div class="quest-progress-fill" id="quest-progress-fill" style="width:0%"></div>
+                    </div>
+                </div>
+                <a href="app.html" class="quest-btn" id="quest-cta">
+                    <i class="fas fa-play"></i> Start Session
+                </a>
+            </div>
+
+            <div class="achievements-card">
+                <div class="ach-title">🏆 Achievements</div>
+                <div class="ach-list" id="ach-list">
+                    <div class="ach-empty">
+                        <i class="fas fa-medal"></i>
+                        Loading achievements...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="js/subjects-data.js"></script>
+<script>
+    const API = 'http://localhost:8000';
+    const token = localStorage.getItem('studyflowToken');
+    const username = localStorage.getItem('username');
+    const onboarding = JSON.parse(localStorage.getItem('sf_onboarding') || 'null');
+
+    // Auth check
+    if (!token) { window.location.href = 'auth.html'; }
+    if (!onboarding) { window.location.href = 'onboarding.html'; }
+
+    // Greeting
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    const emoji = hour < 12 ? '☀️' : hour < 17 ? '👋' : '🌙';
+    document.getElementById('greeting-text').textContent = `${greet}, ${username || 'Learner'}! ${emoji}`;
+
+    // Sidebar user
+    const uname = username || 'Learner';
+    document.getElementById('sb-name').textContent = uname;
+    document.getElementById('sb-avatar').textContent = uname[0].toUpperCase();
+
+    // Sidebar tag from onboarding
+    const catLabels = { school: 'School Student', college: 'College Student', competitive: 'Competitive Prep' };
+    if (onboarding) {
+        document.getElementById('sidebar-tag').textContent = catLabels[onboarding.category] || 'Student';
+    }
+
+    // API fetch helper
+    async function apiFetch(endpoint) {
+        try {
+            const res = await fetch(`${API}${endpoint}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.status === 401) { logout(); return null; }
+            if (!res.ok) return null;
+            return await res.json();
+        } catch { return null; }
+    }
+
+    // Load stats
+    async function loadStats() {
+        const stats = await apiFetch('/users/me/stats');
+        if (stats) {
+            document.getElementById('topbar-streak').textContent = stats.streak_count || 0;
+            document.getElementById('topbar-xp').textContent = stats.xp || 0;
+        }
+    }
+
+    // Load quest
+    async function loadQuest() {
+        const quest = await apiFetch('/quests/today');
+        if (quest) {
+            document.getElementById('quest-title').textContent = quest.title || "Today's Study Session";
+            document.getElementById('quest-desc').textContent = quest.description || 'Complete your daily questions to earn XP and maintain your streak.';
+            const pct = quest.completion_target > 0
+                ? Math.round((quest.current_progress / quest.completion_target) * 100)
+                : 0;
+            document.getElementById('quest-progress-text').textContent = `${quest.current_progress} / ${quest.completion_target}`;
+            document.getElementById('quest-pct').textContent = `${pct}%`;
+            document.getElementById('quest-progress-fill').style.width = `${pct}%`;
+            if (quest.is_completed) {
+                document.getElementById('quest-cta').innerHTML = '<i class="fas fa-check"></i> Quest Complete! Practice More';
+            }
+        } else {
+            document.getElementById('quest-title').textContent = "Today's Study Session";
+            document.getElementById('quest-desc').textContent = 'Start your daily quiz session to earn XP and maintain your streak.';
+        }
+    }
+
+    // Load achievements
+    async function loadAchievements() {
+        const achs = await apiFetch('/achievements');
+        const list = document.getElementById('ach-list');
+        if (!achs || achs.length === 0) {
+            list.innerHTML = `<div class="ach-empty"><i class="fas fa-medal"></i>Answer questions to unlock achievements!</div>`;
+            return;
+        }
+        list.innerHTML = achs.slice(0, 4).map(a => `
+            <div class="ach-item">
+                <div class="ach-icon"><i class="${a.icon_class || 'fas fa-star'}"></i></div>
+                <div>
+                    <div class="ach-name">${a.name}</div>
+                    <div class="ach-desc">${a.description}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Subject Picker Modal Functions
+    function openSubjectPicker() {
+        const modal = document.getElementById('subject-picker-modal');
+        modal.style.display = 'flex';
+        
+        const { category, subcategory, subjects: selected } = JSON.parse(localStorage.getItem('sf_onboarding'));
+        const allSubjects = STUDYFLOW_CURRICULUM[category]?.subcategories[subcategory]?.subjects || {};
+        const grid = document.getElementById('subject-picker-grid');
+        grid.innerHTML = '';
+
+        Object.entries(allSubjects).forEach(([key, sub]) => {
+            const isSelected = selected.includes(key);
+            const card = document.createElement('div');
+            card.id = `picker-${key}`;
+            card.style.cssText = `display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;border:2px solid ${isSelected ? sub.color : '#E5E7EB'};background:${isSelected ? sub.color + '10' : 'white'};cursor:pointer;transition:all 0.2s;`;
+            card.innerHTML = `
+                <div style="width:32px;height:32px;border-radius:8px;background:${sub.color}18;color:${sub.color};display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">
+                    <i class="${sub.icon}"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:0.82rem;font-weight:700;color:#1E1B4B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sub.label}</div>
+                    <div style="font-size:0.72rem;color:#6B7280;">${sub.chapters?.length || 0} chapters</div>
+                </div>
+                <div id="picker-check-${key}" style="width:20px;height:20px;border-radius:50%;border:2px solid ${isSelected ? sub.color : '#E5E7EB'};background:${isSelected ? sub.color : 'white'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.65rem;color:white;">
+                    ${isSelected ? '✓' : ''}
+                </div>
+            `;
+            card.onclick = () => toggleSubject(key, sub.color);
+            grid.appendChild(card);
+        });
+    }
+
+    function toggleSubject(key, color) {
+        const onboardingData = JSON.parse(localStorage.getItem('sf_onboarding'));
+        const idx = onboardingData.subjects.indexOf(key);
+        
+        if (idx > -1) {
+            // Remove subject — don't allow removing last one
+            if (onboardingData.subjects.length === 1) {
+                alert('You must keep at least one subject.');
+                return;
+            }
+            onboardingData.subjects.splice(idx, 1);
+        } else {
+            // Add subject
+            onboardingData.subjects.push(key);
+        }
+        
+        localStorage.setItem('sf_onboarding', JSON.stringify(onboardingData));
+        
+        // Update picker card style instantly
+        const isNowSelected = onboardingData.subjects.includes(key);
+        const card = document.getElementById(`picker-${key}`);
+        const check = document.getElementById(`picker-check-${key}`);
+        card.style.border = `2px solid ${isNowSelected ? color : '#E5E7EB'}`;
+        card.style.background = isNowSelected ? color + '10' : 'white';
+        check.style.border = `2px solid ${isNowSelected ? color : '#E5E7EB'}`;
+        check.style.background = isNowSelected ? color : 'white';
+        check.textContent = isNowSelected ? '✓' : '';
+        
+        // Re-render subject grid on home page instantly
+        const updatedOnboarding = JSON.parse(localStorage.getItem('sf_onboarding'));
+        const { category, subcategory, subjects: selectedKeys } = updatedOnboarding;
+        const subjectData = STUDYFLOW_CURRICULUM[category]?.subcategories[subcategory]?.subjects || {};
+        const grid = document.getElementById('subject-grid');
+        grid.innerHTML = '';
+        selectedKeys.forEach(k => {
+            const sub = subjectData[k];
+            if (!sub) return;
+            renderSubjectCard(grid, k, sub, category, subcategory);
+        });
+    }
+
+    function closeSubjectPicker() {
+        document.getElementById('subject-picker-modal').style.display = 'none';
+    }
+
+    // Render subjects from onboarding data
+    function renderSubjects() {
+        if (!onboarding) return;
+        const { category, subcategory, subjects: selectedKeys } = onboarding;
+        const subjectData = STUDYFLOW_CURRICULUM[category]?.subcategories[subcategory]?.subjects || {};
+        const grid = document.getElementById('subject-grid');
+        grid.innerHTML = '';
+        selectedKeys.forEach(key => {
+            const sub = subjectData[key];
+            if (!sub) return;
+            renderSubjectCard(grid, key, sub, category, subcategory);
+        });
+    }
+
+    function renderSubjectCard(grid, key, sub, category, subcategory) {
+        const chapterCount = sub.chapters?.length || 0;
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'display:flex;flex-direction:column;';
+
+        const card = document.createElement('div');
+        card.className = 'subject-card';
+        card.style.setProperty('--subject-color', sub.color || '#7C3AED');
+        card.style.cursor = 'pointer';
+        card.innerHTML = `
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div class="subject-icon-wrap" style="background:${sub.color}18; color:${sub.color}">
+                    <i class="${sub.icon}"></i>
+                </div>
+                <div style="flex:1;">
+                    <div class="subject-name">${sub.label}</div>
+                    <div class="subject-chapters">${chapterCount} chapters</div>
+                </div>
+                <div id="arrow-${key}" style="color:${sub.color};font-size:0.8rem;transition:transform 0.25s;">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            <div class="subject-progress-bar" style="margin-top:12px;">
+                <div class="subject-progress-fill" style="background:${sub.color}; width:0%"></div>
+            </div>
+        `;
+
+        // Chapter accordion
+        const chaptersDiv = document.createElement('div');
+        chaptersDiv.id = `chapters-${key}`;
+        chaptersDiv.style.cssText = 'display:none;background:white;border:1px solid #E5E7EB;border-top:none;border-radius:0 0 16px 16px;overflow:hidden;';
+
+        (sub.chapters || []).forEach((ch, idx) => {
+            const row = document.createElement('a');
+            row.href = `subject.html?cat=${category}&sub=${subcategory}&subject=${key}#ch-${ch.id}`;
+            row.style.cssText = `display:flex;align-items:center;gap:12px;padding:12px 20px;text-decoration:none;color:#1E1B4B;border-bottom:1px solid #F3F4F6;transition:background 0.15s;`;
+            row.onmouseover = () => row.style.background = sub.color + '08';
+            row.onmouseout = () => row.style.background = 'transparent';
+            row.innerHTML = `
+                <div style="width:26px;height:26px;border-radius:8px;background:${sub.color};color:white;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;flex-shrink:0;">${idx + 1}</div>
+                <div style="font-size:0.83rem;font-weight:600;flex:1;">${ch.title}</div>
+                <i class="fas fa-arrow-right" style="color:${sub.color};font-size:0.72rem;opacity:0.6;"></i>
+            `;
+            chaptersDiv.appendChild(row);
+        });
+
+        // Open full subject link at bottom
+        const viewAll = document.createElement('a');
+        viewAll.href = `subject.html?cat=${category}&sub=${subcategory}&subject=${key}`;
+        viewAll.style.cssText = `display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;font-size:0.78rem;font-weight:700;color:${sub.color};text-decoration:none;background:${sub.color}08;`;
+        viewAll.innerHTML = `<i class="fas fa-book-open"></i> View Full Subject`;
+        chaptersDiv.appendChild(viewAll);
+
+        let isOpen = false;
+        card.onclick = () => {
+            isOpen = !isOpen;
+            chaptersDiv.style.display = isOpen ? 'block' : 'none';
+            const arrow = document.getElementById(`arrow-${key}`);
+            arrow.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+            card.style.borderRadius = isOpen ? '16px 16px 0 0' : '16px';
+            card.style.borderBottom = isOpen ? 'none' : '';
+        };
+
+        wrapper.appendChild(card);
+        wrapper.appendChild(chaptersDiv);
+        grid.appendChild(wrapper);
+    }
+
+    function logout() {
+        localStorage.removeItem('studyflowToken');
+        localStorage.removeItem('username');
+        localStorage.removeItem('sf_onboarding');
+        window.location.href = 'auth.html';
+    }
+
+    // Init
+    renderSubjects();
+    loadStats();
+    loadQuest();
+    loadAchievements();
+</script>
+
+<div id="subject-picker-modal" style="display:none;position:fixed;inset:0;background:rgba(30,27,75,0.4);backdrop-filter:blur(6px);z-index:1000;align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:20px;padding:28px;width:90%;max-width:560px;max-height:80vh;overflow-y:auto;position:relative;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <div>
+                <div style="font-size:1.05rem;font-weight:800;color:#1E1B4B;">Add or Remove Subjects</div>
+                <div style="font-size:0.78rem;color:#6B7280;margin-top:2px;">Toggle subjects on or off. Changes save instantly.</div>
+            </div>
+            <button onclick="closeSubjectPicker()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:#6B7280;padding:4px;">✕</button>
+        </div>
+        <div id="subject-picker-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;"></div>
+        <div style="margin-top:20px;text-align:right;">
+            <button onclick="closeSubjectPicker()" style="padding:10px 24px;background:#7C3AED;color:white;border:none;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;">Done</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

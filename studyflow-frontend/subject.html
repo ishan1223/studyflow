@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow – Subject</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent: #7C3AED;
+            --accent-light: #EDE9FE;
+            --accent-dark: #5B21B6;
+            --success: #059669;
+            --warning: #D97706;
+            --bg: #F5F4FB;
+            --card: #FFFFFF;
+            --sidebar-bg: #1E1B4B;
+            --sidebar-text: #C4B5FD;
+            --text: #1E1B4B;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --font: 'Plus Jakarta Sans', sans-serif;
+            --topbar-height: 68px;
+            --sidebar-width: 240px;
+            --subject-color: #7C3AED;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR (same as home) ── */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            min-height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+        }
+        .sidebar-logo {
+            padding: 24px 20px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 8px;
+        }
+        .sidebar-logo-icon {
+            width: 36px; height: 36px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1rem; flex-shrink: 0;
+        }
+        .sidebar-logo-text { font-size: 1.15rem; font-weight: 800; color: white; }
+        .sidebar-section-label {
+            font-size: 0.68rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: rgba(196,181,253,0.45);
+            padding: 12px 20px 6px;
+        }
+        .sidebar-nav {
+            flex: 1; padding: 4px 12px;
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 12px; border-radius: 10px;
+            text-decoration: none; color: var(--sidebar-text);
+            font-size: 0.88rem; font-weight: 600;
+            transition: all 0.2s ease; cursor: pointer;
+        }
+        .nav-link i { width: 18px; font-size: 0.9rem; }
+        .nav-link:hover { background: rgba(255,255,255,0.06); color: white; }
+        .nav-link.active { background: var(--accent); color: white; }
+        .nav-link.coming-soon { opacity: 0.45; cursor: default; }
+        .nav-link.coming-soon:hover { background: transparent; color: var(--sidebar-text); }
+        .soon-badge {
+            margin-left: auto; font-size: 0.62rem; font-weight: 700;
+            background: rgba(196,181,253,0.15); color: var(--sidebar-text);
+            padding: 2px 6px; border-radius: 4px;
+        }
+        .sidebar-bottom {
+            padding: 12px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .user-pill {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 10px; margin-bottom: 4px;
+        }
+        .user-avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name { font-size: 0.85rem; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-tag { font-size: 0.72rem; color: var(--sidebar-text); }
+        .logout-btn {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 10px;
+            color: var(--sidebar-text); font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+            border: none; background: none; width: 100%; font-family: var(--font);
+        }
+        .logout-btn:hover { background: rgba(220,38,38,0.15); color: #FCA5A5; }
+
+        /* ── MAIN ── */
+        .main-wrap {
+            margin-left: var(--sidebar-width);
+            flex: 1; display: flex; flex-direction: column; min-height: 100vh;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            height: var(--topbar-height);
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            padding: 0 32px; gap: 16px;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 8px;
+            color: var(--text-secondary); font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; transition: color 0.2s;
+        }
+        .back-btn:hover { color: var(--accent); }
+        .topbar-subject {
+            display: flex; align-items: center; gap: 10px; flex: 1;
+        }
+        .topbar-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .topbar-title { font-size: 1rem; font-weight: 800; color: var(--text); }
+        .topbar-chapters { font-size: 0.78rem; color: var(--text-secondary); }
+
+        /* ── SUBJECT HERO ── */
+        .subject-hero {
+            margin: 32px 32px 0;
+            border-radius: 20px;
+            padding: 36px 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .subject-hero::before {
+            content: '';
+            position: absolute;
+            top: -40px; right: -40px;
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+        }
+        .subject-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -60px; right: 80px;
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+        }
+        .hero-icon {
+            width: 56px; height: 56px; border-radius: 16px;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: 16px;
+        }
+        .hero-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+        .hero-sub { font-size: 0.9rem; opacity: 0.85; margin-bottom: 20px; }
+        .hero-meta { display: flex; gap: 20px; }
+        .hero-badge {
+            display: flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px; padding: 6px 12px;
+            font-size: 0.8rem; font-weight: 600;
+        }
+
+        /* ── PAGE BODY ── */
+        .page-body {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            padding: 24px 32px 32px;
+        }
+
+        /* ── CHAPTERS LIST ── */
+        .section-label {
+            font-size: 0.78rem; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--text-secondary); margin-bottom: 14px;
+        }
+        .chapter-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        .chapter-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+
+        .chapter-header {
+            display: flex; align-items: center; gap: 16px;
+            padding: 18px 20px; cursor: pointer;
+        }
+        .chapter-num {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.82rem; font-weight: 800;
+            flex-shrink: 0; color: white;
+        }
+        .chapter-info { flex: 1; }
+        .chapter-title { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+        .chapter-intro-preview {
+            font-size: 0.78rem; color: var(--text-secondary);
+            margin-top: 3px; line-height: 1.4;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 400px;
+        }
+        .chapter-toggle {
+            color: var(--text-secondary); font-size: 0.85rem;
+            transition: transform 0.25s;
+        }
+        .chapter-card.open .chapter-toggle { transform: rotate(180deg); }
+
+        .chapter-body {
+            display: none;
+            border-top: 1px solid var(--border);
+        }
+        .chapter-card.open .chapter-body { display: block; }
+
+        /* Intro section */
+        .chapter-intro {
+            padding: 20px;
+            background: #FAFAFA;
+            border-bottom: 1px solid var(--border);
+        }
+        .intro-label {
+            font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 8px;
+        }
+        .intro-text {
+            font-size: 0.88rem; color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* TOC */
+        .chapter-toc {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .toc-label {
+            font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--text-secondary); margin-bottom: 10px;
+        }
+        .toc-list { display: flex; flex-direction: column; gap: 6px; }
+        .toc-item {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.85rem; color: var(--text);
+            padding: 6px 8px; border-radius: 8px;
+            transition: background 0.15s;
+        }
+        .toc-item:hover { background: var(--accent-light); }
+        .toc-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Resources */
+        .chapter-resources { padding: 16px 20px; }
+        .res-label {
+            font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--text-secondary); margin-bottom: 10px;
+        }
+        .res-list { display: flex; flex-direction: column; gap: 8px; }
+        .res-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 12px; border-radius: 10px;
+            border: 1px solid var(--border);
+            text-decoration: none; color: var(--text);
+            font-size: 0.84rem; font-weight: 600;
+            transition: all 0.2s; background: var(--card);
+        }
+        .res-item:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+        .res-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; flex-shrink: 0;
+        }
+        .res-icon.youtube { background: #FEE2E2; color: #DC2626; }
+        .res-icon.notes { background: #DCFCE7; color: #059669; }
+        .res-icon.github { background: #F3F4F6; color: #1F2937; }
+        .res-type {
+            font-size: 0.7rem; color: var(--text-secondary);
+            font-weight: 500; margin-top: 1px;
+        }
+        .res-arrow { margin-left: auto; color: var(--text-secondary); font-size: 0.75rem; }
+
+        /* Chapter actions */
+        .chapter-actions {
+            padding: 12px 20px;
+            display: flex; gap: 10px;
+            border-top: 1px solid var(--border);
+            background: #FAFAFA;
+        }
+        .btn-chapter {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 8px;
+            font-family: var(--font); font-size: 0.82rem; font-weight: 700;
+            cursor: pointer; border: none; text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-dark); }
+        .btn-outline {
+            background: transparent; color: var(--accent);
+            border: 1.5px solid var(--accent);
+        }
+        .btn-outline:hover { background: var(--accent-light); }
+
+        /* ── RIGHT PANEL ── */
+        .right-panel { display: flex; flex-direction: column; gap: 16px; }
+
+        .panel-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        .panel-title {
+            font-size: 0.9rem; font-weight: 800;
+            color: var(--text); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Quick summary */
+        .summary-list { display: flex; flex-direction: column; gap: 8px; }
+        .summary-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.83rem;
+        }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-label { color: var(--text-secondary); font-weight: 500; }
+        .summary-val { font-weight: 700; color: var(--text); }
+
+        /* AI explain box */
+        .ai-input-wrap {
+            display: flex; gap: 8px; margin-bottom: 12px;
+        }
+        .ai-input {
+            flex: 1; padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px; font-family: var(--font);
+            font-size: 0.84rem; color: var(--text);
+            outline: none; transition: border-color 0.2s;
+        }
+        .ai-input:focus { border-color: var(--accent); }
+        .ai-ask-btn {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: var(--accent); color: white;
+            border: none; cursor: pointer; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .ai-ask-btn:hover { background: var(--accent-dark); }
+        .ai-response {
+            background: var(--accent-light);
+            border-radius: 10px; padding: 12px 14px;
+            font-size: 0.83rem; color: var(--text);
+            line-height: 1.6; display: none;
+        }
+        .ai-response.visible { display: block; animation: fadeIn 0.3s ease; }
+        .ai-loading {
+            display: none; text-align: center; padding: 10px;
+            color: var(--text-secondary); font-size: 0.82rem;
+        }
+        .ai-loading.visible { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Study tips */
+        .tips-list { display: flex; flex-direction: column; gap: 8px; }
+        .tip-item {
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 0.82rem; color: var(--text); line-height: 1.5;
+        }
+        .tip-icon { color: var(--accent); margin-top: 2px; font-size: 0.75rem; flex-shrink: 0; }
+
+        @media (max-width: 1000px) {
+            .page-body { grid-template-columns: 1fr; }
+            .right-panel { display: grid; grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .main-wrap { margin-left: 0; }
+            .page-body { padding: 16px; }
+            .subject-hero { margin: 16px 16px 0; padding: 24px; }
+            .right-panel { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <a href="home.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <span class="sidebar-logo-text">StudyFlow</span>
+    </a>
+    <nav class="sidebar-nav">
+        <a href="home.html" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+        <a href="hub.html" class="nav-link"><i class="fas fa-th-large"></i> Hub</a>
+        <a href="notes.html" class="nav-link"><i class="fas fa-sticky-note"></i> Notes</a>
+        <a href="progress.html" class="nav-link"><i class="fas fa-chart-line"></i> Progress</a>
+        <a href="task.html" class="nav-link"><i class="fas fa-calendar-alt"></i> Task Scheduler</a>
+        <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+    </nav>
+    <div class="sidebar-bottom">
+        <div class="user-pill">
+            <div class="user-avatar" id="sb-avatar">?</div>
+            <div class="user-info">
+                <div class="user-name" id="sb-name">Loading...</div>
+                <div class="user-tag" id="sidebar-tag">Student</div>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Log out
+        </button>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <a href="home.html" class="back-btn"><i class="fas fa-arrow-left"></i> Home</a>
+        <div class="topbar-subject">
+            <div class="topbar-icon" id="topbar-icon"></div>
+            <div>
+                <div class="topbar-title" id="topbar-title">Loading...</div>
+                <div class="topbar-chapters" id="topbar-chapters"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SUBJECT HERO -->
+    <div class="subject-hero" id="subject-hero">
+        <div class="hero-icon" id="hero-icon"><i class="fas fa-book"></i></div>
+        <div class="hero-title" id="hero-title">Subject</div>
+        <div class="hero-sub" id="hero-sub">Loading subject details...</div>
+        <div class="hero-meta">
+            <div class="hero-badge"><i class="fas fa-layer-group"></i> <span id="hero-chapters">0 Chapters</span></div>
+            <div class="hero-badge"><i class="fas fa-link"></i> <span id="hero-resources">0 Resources</span></div>
+            <div class="hero-badge"><i class="fas fa-graduation-cap"></i> <span id="hero-level">All Levels</span></div>
+        </div>
+    </div>
+
+    <!-- PAGE BODY -->
+    <div class="page-body">
+
+        <!-- LEFT: Chapters -->
+        <div class="chapters-wrap">
+            <div class="section-label">Chapters</div>
+            <div id="chapters-container">
+                <!-- Loaded by JS -->
+            </div>
+        </div>
+
+        <!-- RIGHT: Panel -->
+        <div class="right-panel">
+
+            <!-- Subject summary -->
+            <div class="panel-card">
+                <div class="panel-title"><i class="fas fa-info-circle" style="color:var(--accent)"></i> Subject Info</div>
+                <div class="summary-list" id="summary-list">
+                    <div class="summary-item"><span class="summary-label">Total Chapters</span><span class="summary-val" id="info-chapters">–</span></div>
+                    <div class="summary-item"><span class="summary-label">Total Topics</span><span class="summary-val" id="info-topics">–</span></div>
+                    <div class="summary-item"><span class="summary-label">Resources</span><span class="summary-val" id="info-resources">–</span></div>
+                    <div class="summary-item"><span class="summary-label">Category</span><span class="summary-val" id="info-category">–</span></div>
+                </div>
+            </div>
+
+            <!-- AI Ask -->
+            <div class="panel-card">
+                <div class="panel-title"><i class="fas fa-robot" style="color:var(--accent)"></i> Ask AI</div>
+                <div class="ai-box">
+                    <div class="ai-input-wrap">
+                        <input type="text" class="ai-input" id="ai-input" placeholder="Ask anything about this subject..." />
+                        <button class="ai-ask-btn" onclick="askAI()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                    <div class="ai-loading" id="ai-loading"><i class="fas fa-circle-notch fa-spin"></i> Thinking...</div>
+                    <div class="ai-response" id="ai-response"></div>
+                </div>
+            </div>
+
+            <!-- Study Tips -->
+            <div class="panel-card">
+                <div class="panel-title"><i class="fas fa-lightbulb" style="color:#FBBF24"></i> Study Tips</div>
+                <div class="tips-list">
+                    <div class="tip-item"><i class="fas fa-check-circle tip-icon"></i> Study one chapter at a time. Don't jump ahead before you're confident.</div>
+                    <div class="tip-item"><i class="fas fa-check-circle tip-icon"></i> Take notes while reading — write concepts in your own words.</div>
+                    <div class="tip-item"><i class="fas fa-check-circle tip-icon"></i> After each chapter, attempt the quiz to test your understanding.</div>
+                    <div class="tip-item"><i class="fas fa-check-circle tip-icon"></i> Use the Pomodoro timer in Hub for focused study sessions.</div>
+                    <div class="tip-item"><i class="fas fa-check-circle tip-icon"></i> Review your notes the next day to strengthen memory retention.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="js/subjects-data.js"></script>
+<script>
+    const API = 'http://localhost:8000';
+    const token = localStorage.getItem('studyflowToken');
+    const username = localStorage.getItem('username');
+    const onboarding = JSON.parse(localStorage.getItem('sf_onboarding') || 'null');
+
+    if (!token) { window.location.href = 'auth.html'; }
+
+    // Sidebar setup
+    const uname = username || 'Learner';
+    document.getElementById('sb-name').textContent = uname;
+    document.getElementById('sb-avatar').textContent = uname[0].toUpperCase();
+    const catLabels = { school: 'School Student', college: 'College Student', competitive: 'Competitive Prep' };
+    if (onboarding) document.getElementById('sidebar-tag').textContent = catLabels[onboarding.category] || 'Student';
+
+    // Parse URL params
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    const sub = params.get('sub');
+    const subjectKey = params.get('subject');
+
+    // Get subject data
+    const subjectData = STUDYFLOW_CURRICULUM[cat]?.subcategories[sub]?.subjects[subjectKey];
+
+    if (!subjectData) {
+        document.getElementById('chapters-container').innerHTML = '<p style="color:#6B7280; padding:20px;">Subject not found. <a href="home.html">Go home</a></p>';
+    } else {
+        initPage();
+    }
+
+    function initPage() {
+        const color = subjectData.color || '#7C3AED';
+        document.documentElement.style.setProperty('--subject-color', color);
+
+        // Topbar
+        document.getElementById('topbar-icon').style.cssText = `background:${color}18; color:${color}; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem;`;
+        document.getElementById('topbar-icon').innerHTML = `<i class="${subjectData.icon}"></i>`;
+        document.getElementById('topbar-title').textContent = subjectData.label;
+        document.getElementById('topbar-chapters').textContent = `${subjectData.chapters.length} chapters`;
+
+        // Hero
+        document.getElementById('subject-hero').style.background = `linear-gradient(135deg, ${color} 0%, ${color}CC 100%)`;
+        document.getElementById('hero-icon').innerHTML = `<i class="${subjectData.icon}"></i>`;
+        document.getElementById('hero-title').textContent = subjectData.label;
+        document.getElementById('hero-sub').textContent = getSubjectTagline(subjectKey);
+        document.getElementById('hero-chapters').textContent = `${subjectData.chapters.length} Chapters`;
+
+        const totalResources = Object.values(subjectData.resources || {}).flat().length;
+        document.getElementById('hero-resources').textContent = `${totalResources} Resources`;
+
+        const levelMap = { school: 'School Level', college: 'University Level', competitive: 'Exam Level' };
+        document.getElementById('hero-level').textContent = levelMap[cat] || 'All Levels';
+
+        // Info panel
+        const totalTopics = subjectData.chapters.reduce((acc, ch) => acc + (ch.topics?.length || 0), 0);
+        document.getElementById('info-chapters').textContent = subjectData.chapters.length;
+        document.getElementById('info-topics').textContent = totalTopics;
+        document.getElementById('info-resources').textContent = totalResources;
+        document.getElementById('info-category').textContent = catLabels[cat] || cat;
+
+        // Render chapters
+        renderChapters();
+    }
+
+    function getSubjectTagline(key) {
+        const lines = {
+            maths: 'Build strong foundations in numbers, algebra, geometry and calculus.',
+            physics: 'Understand the laws that govern motion, energy, and the universe.',
+            chemistry: 'Explore matter, reactions, and the science behind everyday substances.',
+            biology: 'Discover life — from cells to ecosystems.',
+            science: 'Explore the natural world through curiosity and evidence.',
+            dsa: 'Master data structures and algorithms for placements and problem solving.',
+            dbms: 'Design and manage databases with confidence.',
+            os: 'Understand how operating systems manage hardware and software.',
+            cn: 'Learn how computers communicate across networks.',
+            english: 'Strengthen your reading, writing, grammar and communication skills.',
+            hindi: 'हिंदी भाषा, व्याकरण और साहित्य की गहरी समझ।',
+            social: 'Explore history, geography, civics and economics of the world.',
+            sst: 'Understand India and the world through history, geography and economics.',
+            history: 'Trace the events and ideas that shaped civilisations.',
+            polity: 'Understand the Indian Constitution and how democracy works.',
+            geography: 'Explore the physical and human features of Earth.',
+            economy: 'Understand how markets, nations, and policies drive economic outcomes.',
+            scitech: 'Stay updated on science and technology transforming India and the world.',
+            accounts: 'Master financial accounting — from journal entries to balance sheets.',
+            economics: 'Understand markets, national income, and economic policy.',
+            blaw: 'Know your rights — business law for the modern professional.',
+            finance: 'Learn to evaluate investments and manage financial decisions.',
+        };
+        return lines[key] || 'Explore chapters, topics and curated resources.';
+    }
+
+    function renderChapters() {
+        const container = document.getElementById('chapters-container');
+        container.innerHTML = '';
+        const color = subjectData.color || '#7C3AED';
+
+        subjectData.chapters.forEach((ch, idx) => {
+            const resources = (subjectData.resources || {})[ch.id] || [];
+            const card = document.createElement('div');
+            card.className = 'chapter-card';
+            card.id = `ch-${ch.id}`;
+
+            const topicsHTML = (ch.topics || []).map(t => `
+                <div class="toc-item">
+                    <div class="toc-dot" style="background:${color}"></div>
+                    ${t}
+                </div>
+            `).join('');
+
+            const resourcesHTML = resources.length > 0 ? resources.map(r => {
+                const typeIcon = r.type === 'youtube' ? 'fab fa-youtube' : r.type === 'github' ? 'fab fa-github' : 'fas fa-file-alt';
+                const typeClass = r.type === 'youtube' ? 'youtube' : r.type === 'github' ? 'github' : 'notes';
+                const typeLabel = r.type === 'youtube' ? 'YouTube Video' : r.type === 'github' ? 'GitHub Notes' : 'Study Notes';
+                return `
+                    <a href="javascript:void(0)" onclick="openResource('${r.url}','${ch.title}','${subjectData.label}')" class="res-item">
+                        <div class="res-icon ${typeClass}"><i class="${typeIcon}"></i></div>
+                        <div>
+                            <div>${r.title}</div>
+                            <div class="res-type">${typeLabel}</div>
+                        </div>
+                        <i class="fas fa-external-link-alt res-arrow"></i>
+                    </a>
+                `;
+            }).join('') : '<p style="font-size:0.82rem; color:#9CA3AF; padding:4px 0;">More resources coming soon.</p>';
+
+            card.innerHTML = `
+                <div class="chapter-header" onclick="toggleChapter('${ch.id}')">
+                    <div class="chapter-num" style="background:${color}">${idx + 1}</div>
+                    <div class="chapter-info">
+                        <div class="chapter-title">${ch.title}</div>
+                        <div class="chapter-intro-preview">${ch.intro}</div>
+                    </div>
+                    <i class="fas fa-chevron-down chapter-toggle"></i>
+                </div>
+                <div class="chapter-body">
+                    <div class="chapter-intro">
+                        <div class="intro-label">Chapter Overview</div>
+                        <div class="intro-text">${ch.intro}</div>
+                    </div>
+                    <div class="chapter-toc">
+                        <div class="toc-label">Topics Covered</div>
+                        <div class="toc-list">${topicsHTML}</div>
+                    </div>
+                    <div class="chapter-resources">
+                        <div class="res-label">Best Resources</div>
+                        <div class="res-list">${resourcesHTML}</div>
+                    </div>
+                    <div class="chapter-actions">
+                        <a href="app.html" class="btn-chapter btn-primary"><i class="fas fa-brain"></i> Quiz This Chapter</a>
+                        <button class="btn-chapter btn-outline" onclick="askAboutChapter('${ch.title}')"><i class="fas fa-robot"></i> Ask AI</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function toggleChapter(id) {
+        const card = document.getElementById(`ch-${id}`);
+        card.classList.toggle('open');
+    }
+
+    function openResource(url, chapterTitle, subjectLabel) {
+        const projectName = `${subjectLabel} – ${chapterTitle}`;
+        window.open(
+            `notes-popup.html?name=${encodeURIComponent(projectName)}`,
+            'studyflow-notes',
+            'width=420,height=580,toolbar=no,location=no,resizable=yes,scrollbars=yes'
+        );
+        window.open(url, '_blank');
+    }
+
+    // AI ask
+    async function askAI(question) {
+        const input = document.getElementById('ai-input');
+        const q = question || input.value.trim();
+        if (!q) return;
+
+        const loading = document.getElementById('ai-loading');
+        const response = document.getElementById('ai-response');
+
+        loading.classList.add('visible');
+        response.classList.remove('visible');
+        input.value = '';
+
+        const subjectContext = `You are a helpful study assistant. The student is studying "${subjectData.label}". Answer the following question clearly and concisely in 2-4 sentences suitable for a student: ${q}`;
+
+        try {
+            const res = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'claude-sonnet-4-6',
+                    max_tokens: 300,
+                    messages: [{ role: 'user', content: subjectContext }]
+                })
+            });
+            const data = await res.json();
+            const text = data.content?.[0]?.text || 'Sorry, I could not generate a response.';
+            response.textContent = text;
+            response.classList.add('visible');
+        } catch {
+            response.textContent = 'Could not connect to AI. Please check your connection.';
+            response.classList.add('visible');
+        } finally {
+            loading.classList.remove('visible');
+        }
+    }
+
+    function askAboutChapter(chapterTitle) {
+        document.getElementById('ai-input').value = `Explain the key concepts in "${chapterTitle}" simply.`;
+        askAI();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('ai-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') askAI();
+    });
+
+    function logout() {
+        localStorage.removeItem('studyflowToken');
+        localStorage.removeItem('username');
+        localStorage.removeItem('sf_onboarding');
+        window.location.href = 'auth.html';
+    }
+
+    const catlabels = { school: 'School Student', college: 'College Student', competitive: 'Competitive Prep' };
+</script>
+</body>
+</html>

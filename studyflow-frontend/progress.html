@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress – StudyFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/favicon_io/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon_io/favicon.ico">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+       
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        i.fas, i.far, i.fa { font-family: "Font Awesome 6 Free" !important; font-weight: 900 !important; }
+        i.fab { font-family: "Font Awesome 6 Brands" !important; font-weight: 400 !important; }
+
+        :root {
+            --accent-glow: #7C3AED;
+            --accent-cyan: #06B6D4;
+            --accent-orange: #F59E0B;
+            --success-color: #059669;
+            --error-color: #DC2626;
+            --bg-dark: #F5F4FB;
+            --bg-card: #FFFFFF;
+            --border-color: #E5E7EB;
+            --text-primary: #1E1B4B;
+            --text-secondary: #6B7280;
+            --text-placeholder: #9CA3AF;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --border-radius-md: 8px;
+            --border-radius-lg: 16px;
+            --border-radius-pill: 20px;
+            --transition-fast: 0.15s;
+            --transition-normal: 0.2s;
+            --font-size-sm: 0.88rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.1rem;
+            --font-size-xl: 1.35rem;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* ── SIDEBAR ── */
+        .progress-sidebar {
+            width: 240px;
+            background: #1E1B4B;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+            overflow-y: auto;
+        }
+
+        .sb-logo {
+            padding: 24px 20px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .sb-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: #7C3AED;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .sb-logo span {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .sb-nav {
+            padding: 4px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .sb-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #C4B5FD;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+
+        .sb-link:hover {
+            background: rgba(124, 58, 237, 0.15);
+            color: white;
+        }
+
+        .sb-link.active {
+            background: #7C3AED;
+            color: white;
+        }
+
+        .sb-link i {
+            width: 18px;
+            font-size: 0.9rem;
+        }
+
+        .sb-footer {
+            padding: 12px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+
+        .sb-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+        }
+
+        .sb-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #7C3AED;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .sb-username {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sb-role {
+            font-size: 0.72rem;
+            color: #C4B5FD;
+        }
+
+        .sb-logout {
+            width: 100%;
+            margin-top: 8px;
+            padding: 9px 12px;
+            background: #DC2626;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 600;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .sb-logout:hover {
+            background: #B91C1C;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .progress-main {
+            margin-left: 240px;
+            padding: 2rem;
+            min-height: 100vh;
+            flex: 1;
+            max-width: calc(100vw - 240px);
+        }
+
+        .progress-header {
+            margin-bottom: 28px;
+        }
+
+        .progress-header h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0 0 4px;
+        }
+
+        .progress-header p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* ── KPI CARDS ── */
+        .progress-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .kpi-val {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-glow);
+            line-height: 1.1;
+        }
+
+        .kpi-val.empty {
+            color: var(--text-placeholder);
+            font-weight: 400;
+        }
+
+        .kpi-sub {
+            font-size: 0.72rem;
+            color: var(--text-placeholder);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .kpi-lbl {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .kpi-trend-up { color: var(--success-color); }
+        .kpi-trend-down { color: var(--error-color); }
+
+        /* ── SUBJECT PERFORMANCE ── */
+        .subject-performance-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .subject-performance-card h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subject-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .subject-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .subject-name {
+            width: 120px;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            flex-shrink: 0;
+        }
+
+        .subject-bar-track {
+            flex: 1;
+            height: 24px;
+            background: var(--bg-dark);
+            border-radius: var(--border-radius-pill);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .subject-bar-fill {
+            height: 100%;
+            border-radius: var(--border-radius-pill);
+            transition: width 0.8s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            min-width: 30px;
+        }
+
+        .subject-accuracy {
+            width: 60px;
+            text-align: right;
+            font-weight: 700;
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            flex-shrink: 0;
+        }
+
+        .subject-trend {
+            width: 24px;
+            text-align: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .subject-insight {
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--bg-dark);
+            border-radius: var(--border-radius-md);
+            border-left: 4px solid var(--accent-glow);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .subject-insight strong {
+            color: var(--text-primary);
+        }
+
+        .empty-state-card {
+            text-align: center;
+            padding: var(--spacing-2xl) var(--spacing-xl);
+            color: var(--text-secondary);
+        }
+
+        .empty-state-card i {
+            font-size: 3rem;
+            color: var(--text-placeholder);
+            margin-bottom: var(--spacing-md);
+            display: block;
+        }
+
+        .empty-state-card p {
+            font-size: var(--font-size-base);
+            font-weight: 500;
+        }
+
+        .empty-state-card .sub {
+            font-size: var(--font-size-sm);
+            color: var(--text-placeholder);
+            margin-top: 4px;
+        }
+
+        /* ── CHARTS ROW ── */
+        .progress-charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+        }
+
+        .chart-card h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-lg);
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 160px;
+        }
+
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            gap: 4px;
+            height: 100%;
+            justify-content: flex-end;
+        }
+
+        .bar {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            min-height: 4px;
+            transition: height 0.6s ease;
+        }
+
+        .bar.tasks-bar {
+            background: linear-gradient(180deg, #7C3AED, #6366F1);
+        }
+
+        .bar.pomo-bar {
+            background: linear-gradient(180deg, #F59E0B, #F97316);
+        }
+
+        .bar-lbl {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .bar-val {
+            font-size: 0.7rem;
+            color: var(--text-placeholder);
+        }
+
+        .chart-insight {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--bg-dark);
+            border-radius: var(--border-radius-md);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .chart-insight i {
+            color: var(--accent-glow);
+            margin-right: 6px;
+        }
+
+        /* ── GOALS PROGRESS ── */
+        .goals-progress-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .goals-progress-card h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .goal-progress-item {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .goal-progress-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .goal-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .goal-progress-header span:first-child {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+        }
+
+        .goal-progress-header span:last-child {
+            font-weight: 700;
+            color: var(--accent-glow);
+        }
+
+        .goal-progress-track {
+            height: 10px;
+            background: var(--border-color);
+            border-radius: var(--border-radius-pill);
+            overflow: hidden;
+        }
+
+        .goal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-glow), var(--accent-cyan));
+            border-radius: var(--border-radius-pill);
+            transition: width 0.5s ease;
+        }
+
+        .goal-progress-sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .goal-stretch {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: rgba(124, 58, 237, 0.06);
+            border-radius: var(--border-radius-md);
+            border: 1px dashed var(--accent-glow);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .goal-stretch strong {
+            color: var(--accent-glow);
+        }
+
+        .goals-empty {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        /* ── ACHIEVEMENT TIMELINE ── */
+        .achievement-timeline-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .achievement-timeline-card h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timeline-container {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: var(--spacing-lg);
+            padding-left: var(--spacing-md);
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -22px;
+            top: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-glow);
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--accent-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            color: white;
+        }
+
+        .timeline-dot.locked {
+            background: var(--border-color);
+            box-shadow: 0 0 0 2px var(--border-color);
+        }
+
+        .timeline-item-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .timeline-item-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+        }
+
+        .timeline-item-date {
+            font-size: 0.72rem;
+            color: var(--text-placeholder);
+        }
+
+        .timeline-item-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 10px;
+            border-radius: var(--border-radius-pill);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .timeline-item-badge.unlocked {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-glow);
+        }
+
+        .timeline-item-badge.locked {
+            background: var(--bg-dark);
+            color: var(--text-placeholder);
+        }
+
+        .next-milestone {
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--bg-dark);
+            border-radius: var(--border-radius-md);
+        }
+
+        .next-milestone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .next-milestone-header span:first-child {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+        }
+
+        .next-milestone-header span:last-child {
+            font-weight: 700;
+            font-size: var(--font-size-sm);
+            color: var(--accent-glow);
+        }
+
+        .next-milestone-track {
+            height: 8px;
+            background: var(--border-color);
+            border-radius: var(--border-radius-pill);
+            overflow: hidden;
+        }
+
+        .next-milestone-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-glow), var(--accent-cyan));
+            border-radius: var(--border-radius-pill);
+            transition: width 0.5s ease;
+        }
+
+        /* ── STREAK JOURNEY ── */
+        .streak-journey-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .streak-journey-card h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .streak-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 6px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .streak-day {
+            aspect-ratio: 1;
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: var(--bg-dark);
+            color: var(--text-placeholder);
+            transition: all 0.2s ease;
+        }
+
+        .streak-day.active {
+            background: var(--accent-glow);
+            color: white;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+        }
+
+        .streak-day.today {
+            border: 2px solid var(--accent-glow);
+            background: var(--bg-card);
+            color: var(--accent-glow);
+        }
+
+        .streak-day.missed {
+            background: rgba(220, 38, 38, 0.08);
+            color: var(--error-color);
+        }
+
+        .streak-day.future {
+            opacity: 0.3;
+        }
+
+        .streak-day .day-num {
+            font-size: 0.6rem;
+        }
+
+        .streak-status {
+            text-align: center;
+            padding: var(--spacing-md);
+            background: var(--bg-dark);
+            border-radius: var(--border-radius-md);
+        }
+
+        .streak-status .streak-emoji {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .streak-status .streak-text {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+        }
+
+        .streak-status .streak-sub {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: var(--spacing-xl);
+            right: var(--spacing-xl);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-md) var(--spacing-lg);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { border-left: 4px solid var(--success-color); }
+        .toast.error { border-left: 4px solid var(--error-color); }
+        .toast.info { border-left: 4px solid var(--accent-glow); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 992px) {
+            .progress-kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .progress-charts-row {
+                grid-template-columns: 1fr;
+            }
+            .subject-name {
+                width: 80px;
+                font-size: 0.75rem;
+            }
+            .subject-accuracy {
+                width: 50px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .progress-main {
+                margin-left: 0;
+                padding: 1rem;
+                max-width: 100%;
+            }
+
+            .progress-sidebar {
+                display: none;
+            }
+
+            .progress-kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .subject-item {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .subject-name {
+                width: 100%;
+                font-size: 0.82rem;
+            }
+
+            .subject-bar-track {
+                flex: 1;
+                min-width: 100px;
+                height: 20px;
+            }
+
+            .subject-accuracy {
+                width: auto;
+                font-size: 0.82rem;
+            }
+
+            .streak-grid {
+                grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .progress-kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="progress-sidebar">
+        <a href="home.html" class="sb-logo">
+            <div class="sb-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+            <span>StudyFlow</span>
+        </a>
+        <nav class="sb-nav">
+            <a href="home.html" class="sb-link"><i class="fas fa-home"></i> Home</a>
+            <a href="hub.html" class="sb-link"><i class="fas fa-th-large"></i> Hub</a>
+            <a href="notes.html" class="sb-link"><i class="fas fa-sticky-note"></i> Notes</a>
+            <a href="progress.html" class="sb-link active"><i class="fas fa-chart-line"></i> Progress</a>
+            <a href="tasks.html" class="sb-link"><i class="fas fa-calendar-alt"></i> Task Scheduler</a>
+            <a href="profile.html" class="sb-link"><i class="fas fa-user"></i> Profile</a>
+        </nav>
+        <div class="sb-footer">
+            <div class="sb-user">
+                <div class="sb-avatar" id="sb-avatar">?</div>
+                <div>
+                    <div class="sb-username" id="sb-name">...</div>
+                    <div class="sb-role">Student</div>
+                </div>
+            </div>
+            <button class="sb-logout" onclick="logoutUser()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="progress-main">
+
+        <!-- Header -->
+        <div class="progress-header">
+            <h1>📈 Your Learning Journey</h1>
+            <p id="dynamic-insight">Start your journey today! Every session counts.</p>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="progress-kpi-grid" id="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-val" id="prog-xp">0</div>
+                <div class="kpi-sub" id="prog-xp-change">Start earning XP</div>
+                <div class="kpi-lbl">⭐ Total XP</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-val" id="prog-streak">0</div>
+                <div class="kpi-sub" id="prog-streak-best">Start your streak</div>
+                <div class="kpi-lbl">🔥 Day Streak</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-val" id="prog-accuracy">—</div>
+                <div class="kpi-sub" id="prog-accuracy-change">Answer questions to see</div>
+                <div class="kpi-lbl">📊 Accuracy</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-val" id="prog-rank">—</div>
+                <div class="kpi-sub" id="prog-rank-sub">Start learning to rank</div>
+                <div class="kpi-lbl">🏆 Rank</div>
+            </div>
+        </div>
+
+        <!-- Subject Performance Breakdown -->
+        <div class="subject-performance-card">
+            <h3><i class="fas fa-layer-group" style="color:var(--accent-glow);"></i> Subject Performance Breakdown</h3>
+            <div class="subject-list" id="subject-list">
+                <!-- Dynamically loaded -->
+            </div>
+            <div class="subject-insight" id="subject-insight">
+                <i class="fas fa-lightbulb" style="color:var(--accent-glow);"></i>
+                Start answering questions to see your subject performance!
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="progress-charts-row">
+            <div class="chart-card">
+                <h3><i class="fas fa-check-double" style="color:var(--accent-glow);margin-right:8px;"></i>Tasks Completed (7 days)</h3>
+                <div class="bar-chart" id="tasks-bar-chart"></div>
+                <div class="chart-insight" id="tasks-insight">
+                    <i class="fas fa-info-circle"></i> Complete tasks to see your progress here.
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3><i class="fas fa-brain" style="color:var(--accent-orange);margin-right:8px;"></i>Study Minutes (7 days)</h3>
+                <div class="bar-chart" id="pomo-bar-chart"></div>
+                <div class="chart-insight" id="pomo-insight">
+                    <i class="fas fa-info-circle"></i> Use the Pomodoro timer to track focus time.
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Goals Progress -->
+        <div class="goals-progress-card">
+            <h3><i class="fas fa-bullseye" style="color:var(--accent-glow);margin-right:8px;"></i>Weekly Study Goals</h3>
+            <div id="progress-goals-list">
+                <p class="goals-empty">
+                    <i class="fas fa-info-circle" style="margin-right:6px;"></i>
+                    No active weekly goals. Go to <a href="hub.html" style="color:var(--accent-glow);text-decoration:none;font-weight:600;">Hub → Goals</a> to set one!
+                </p>
+            </div>
+        </div>
+
+        <!-- Achievement Timeline -->
+        <div class="achievement-timeline-card">
+            <h3><i class="fas fa-trophy" style="color:var(--accent-orange);margin-right:8px;"></i>Achievement Timeline</h3>
+            <div class="timeline-container" id="achievement-timeline">
+                <div class="timeline-item" style="color:var(--text-secondary);font-size:var(--font-size-sm);">
+                    <div class="timeline-dot locked"></div>
+                    <div class="timeline-item-content">
+                        <span class="timeline-item-title">No achievements yet</span>
+                        <span class="timeline-item-badge locked">🔒 Locked</span>
+                    </div>
+                </div>
+            </div>
+            <div class="next-milestone" id="next-milestone">
+                <div class="next-milestone-header">
+                    <span>🎯 First Achievement: Answer 1 Question</span>
+                    <span>0%</span>
+                </div>
+                <div class="next-milestone-track">
+                    <div class="next-milestone-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Streak Journey -->
+        <div class="streak-journey-card">
+            <h3><i class="fas fa-fire" style="color:var(--accent-orange);margin-right:8px;"></i>Streak Journey</h3>
+            <div class="streak-grid" id="streak-grid">
+                <!-- Dynamically loaded -->
+            </div>
+            <div class="streak-status" id="streak-status">
+                <span class="streak-emoji">🚀</span>
+                <div class="streak-text">Start your streak today!</div>
+                <div class="streak-sub">Complete a study session to begin your journey.</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+         /* ──────────────────────────────────────────────────────────────
+           📌 NOTE: This page uses REAL API calls from the StudyFlow backend.
+           If tables (todos, notes, pomodoro_sessions, study_goals) don't exist yet,
+           the page gracefully shows empty states with encouraging messages.
+           
+           To enable full functionality, run:
+           docker-compose exec db psql -U user -d studyflow -f /app/schema_v2_features.sql
+           ────────────────────────────────────────────────────────────── */
+        // ──────────────────────────────────────────────────────────────
+        // 📌 NOTE: This page uses REAL API calls from the StudyFlow backend.
+        // If tables (todos, notes, pomodoro_sessions, study_goals) don't exist yet,
+        // the page gracefully shows empty states with encouraging messages.
+        // 
+        // To enable full functionality, run:
+        // docker-compose exec db psql -U user -d studyflow -f /app/schema_v2_features.sql
+        // ──────────────────────────────────────────────────────────────
+
+        // ============================================================
+        // API CONFIGURATION
+        // ============================================================
+
+        const API_BASE = 'http://localhost:8000';
+
+        function getToken() {
+            return localStorage.getItem('studyflowToken') || localStorage.getItem('studyflow_token');
+        }
+
+        function getHeaders() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = 'auth.html';
+                return {};
+            }
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('studyflowToken');
+            localStorage.removeItem('studyflow_token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('sf_onboarding');
+            window.location.href = 'auth.html';
+        }
+
+        async function apiRequest(endpoint, options = {}) {
+            const url = `${API_BASE}${endpoint}`;
+            options.headers = {
+                ...getHeaders(),
+                ...options.headers
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (response.status === 401) {
+                    localStorage.removeItem('studyflowToken');
+                    localStorage.removeItem('studyflow_token');
+                    window.location.href = 'auth.html';
+                    return null;
+                }
+                if (response.status === 204) return true;
+                if (!response.ok) {
+                    // If tables don't exist, API returns 500 or 404
+                    // We handle this gracefully by returning null
+                    console.warn(`API error (${response.status}) for ${endpoint}: Tables may not exist yet.`);
+                    return null;
+                }
+                return await response.json();
+            } catch (err) {
+                // Network errors or JSON parsing errors
+                console.warn(`Request to ${endpoint} failed:`, err.message);
+                return null;
+            }
+        }
+
+        // ============================================================
+        // UTILITY FUNCTIONS
+        // ============================================================
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+
+            toast.className = 'toast show ' + type;
+
+            let icon = '<i class="fas fa-check-circle" style="color: var(--success-color);"></i>';
+            if (type === 'error') {
+                icon = '<i class="fas fa-exclamation-circle" style="color: var(--error-color);"></i>';
+            } else if (type === 'info') {
+                icon = '<i class="fas fa-info-circle" style="color: var(--accent-glow);"></i>';
+            }
+
+            toast.innerHTML = `${icon} <span style="font-weight:600;">${escapeHTML(message)}</span>`;
+
+            if (window.toastTimeout) clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // ============================================================
+        // MODULE: PROGRESS DASHBOARD
+        // ============================================================
+
+        async function loadProgressPanel() {
+            try {
+                // Fetch real data from backend — if tables don't exist, returns null
+                const stats = await apiRequest('/users/me/stats');
+                const weeklyData = await apiRequest('/progress/weekly');
+                const goals = await apiRequest('/goals');
+                const achievements = await apiRequest('/achievements');
+
+                // --- Update KPI Cards with real data ---
+                const xp = stats?.xp || 0;
+                const streak = stats?.streak_count || 0;
+
+                document.getElementById('prog-xp').textContent = xp;
+                document.getElementById('prog-xp-change').textContent = xp > 0 ? `Keep going!` : 'Start earning XP';
+
+                document.getElementById('prog-streak').textContent = streak;
+                document.getElementById('prog-streak-best').textContent = streak > 0 ? `Keep it up!` : 'Start your streak';
+
+                // Accuracy (calculated from user_progress if available)
+                const totalCorrect = weeklyData?.task_totals?.total_completed || 0;
+                const totalAttempts = weeklyData?.task_totals?.total_completed + weeklyData?.task_totals?.total_pending || 0;
+
+                const accuracyEl = document.getElementById('prog-accuracy');
+                const accuracyChangeEl = document.getElementById('prog-accuracy-change');
+
+                if (totalAttempts > 0) {
+                    const accuracy = Math.round((totalCorrect / totalAttempts) * 100);
+                    accuracyEl.textContent = accuracy + '%';
+                    accuracyChangeEl.textContent = `${totalCorrect} correct out of ${totalAttempts}`;
+                    accuracyEl.classList.remove('empty');
+                } else {
+                    accuracyEl.textContent = '—';
+                    accuracyEl.classList.add('empty');
+                    accuracyChangeEl.textContent = 'Answer questions to see';
+                }
+
+                // Rank (placeholder — would need leaderboard data)
+                const rankEl = document.getElementById('prog-rank');
+                const rankSubEl = document.getElementById('prog-rank-sub');
+                if (xp > 0) {
+                    rankEl.textContent = 'Top 100%';
+                    rankEl.classList.remove('empty');
+                    rankSubEl.textContent = 'Keep learning to rank up!';
+                } else {
+                    rankEl.textContent = '—';
+                    rankEl.classList.add('empty');
+                    rankSubEl.textContent = 'Start learning to rank';
+                }
+
+                // --- Dynamic Insight ---
+                const username = localStorage.getItem('username') || 'Learner';
+                const insightEl = document.getElementById('dynamic-insight');
+
+                if (xp === 0 && streak === 0) {
+                    insightEl.textContent = `🚀 Welcome, ${username}! Start your first study session to begin your journey.`;
+                } else if (streak >= 7) {
+                    insightEl.textContent = `🔥 Amazing work, ${username}! You're on a ${streak}-day streak. Keep it up!`;
+                } else if (streak >= 3) {
+                    insightEl.textContent = `💪 Great job, ${username}! You're building momentum with a ${streak}-day streak.`;
+                } else if (streak > 0) {
+                    insightEl.textContent = `🌟 Day ${streak} of your journey, ${username}! Every session counts.`;
+                } else {
+                    insightEl.textContent = `📚 Welcome back, ${username}! Let's make today count.`;
+                }
+
+                // --- Subject Performance ---
+                // For now, show empty state with encouragement
+                renderSubjectPerformance([]);
+
+                // --- Bar Charts (7-day data) ---
+                const tasksData = weeklyData?.tasks_per_day || [];
+                const pomoData = weeklyData?.minutes_per_day || [];
+
+                renderBarChart('tasks-bar-chart', tasksData, 'tasks_done', 'tasks-bar');
+                renderBarChart('pomo-bar-chart', pomoData, 'minutes_studied', 'pomo-bar');
+
+                // Chart insights
+                renderChartInsights(tasksData, 'tasks-insight', 'tasks');
+                renderChartInsights(pomoData, 'pomo-insight', 'minutes');
+
+                // --- Goals ---
+                renderProgressGoals(goals || []);
+
+                // --- Achievements ---
+                renderAchievementTimeline(achievements || []);
+
+                // --- Streak Journey ---
+                renderStreakJourney(streak);
+
+            } catch (err) {
+                console.error('Failed to load progress', err);
+                // Show empty state with encouragement
+                showEmptyState();
+            }
+        }
+
+        function showEmptyState() {
+            const username = localStorage.getItem('username') || 'Learner';
+            document.getElementById('dynamic-insight').textContent =
+                `🚀 Welcome, ${username}! Start your first study session to begin your journey.`;
+
+            document.getElementById('prog-xp').textContent = '0';
+            document.getElementById('prog-xp-change').textContent = 'Start earning XP';
+            document.getElementById('prog-streak').textContent = '0';
+            document.getElementById('prog-streak-best').textContent = 'Start your streak';
+            document.getElementById('prog-accuracy').textContent = '—';
+            document.getElementById('prog-accuracy').classList.add('empty');
+            document.getElementById('prog-accuracy-change').textContent = 'Answer questions to see';
+            document.getElementById('prog-rank').textContent = '—';
+            document.getElementById('prog-rank').classList.add('empty');
+            document.getElementById('prog-rank-sub').textContent = 'Start learning to rank';
+
+            // Empty subject performance
+            renderSubjectPerformance([]);
+
+            // Empty charts
+            renderBarChart('tasks-bar-chart', [], 'tasks_done', 'tasks-bar');
+            renderBarChart('pomo-bar-chart', [], 'minutes_studied', 'pomo-bar');
+            document.getElementById('tasks-insight').innerHTML =
+                `<i class="fas fa-info-circle"></i> Complete tasks to see your progress here.`;
+            document.getElementById('pomo-insight').innerHTML =
+                `<i class="fas fa-info-circle"></i> Use the Pomodoro timer to track focus time.`;
+
+            // Empty goals
+            document.getElementById('progress-goals-list').innerHTML = `
+                <p class="goals-empty">
+                    <i class="fas fa-info-circle" style="margin-right:6px;"></i>
+                    No active weekly goals. Go to <a href="hub.html" style="color:var(--accent-glow);text-decoration:none;font-weight:600;">Hub → Goals</a> to set one!
+                </p>
+            `;
+
+            // Empty achievements
+            document.getElementById('achievement-timeline').innerHTML = `
+                <div class="timeline-item" style="color:var(--text-secondary);font-size:var(--font-size-sm);">
+                    <div class="timeline-dot locked"></div>
+                    <div class="timeline-item-content">
+                        <span class="timeline-item-title">No achievements yet</span>
+                        <span class="timeline-item-badge locked">🔒 Locked</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('next-milestone').innerHTML = `
+                <div class="next-milestone-header">
+                    <span>🎯 First Achievement: Answer 1 Question</span>
+                    <span>0%</span>
+                </div>
+                <div class="next-milestone-track">
+                    <div class="next-milestone-fill" style="width: 0%;"></div>
+                </div>
+            `;
+
+            // Empty streak
+            renderStreakJourney(0);
+        }
+
+        function renderSubjectPerformance(subjects) {
+            const container = document.getElementById('subject-list');
+            container.innerHTML = '';
+
+            if (!subjects || subjects.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state-card">
+                        <i class="fas fa-book-open"></i>
+                        <p>No subject data yet</p>
+                        <div class="sub">Start answering questions to build your performance breakdown!</div>
+                    </div>
+                `;
+                document.getElementById('subject-insight').innerHTML = `
+                    <i class="fas fa-lightbulb" style="color:var(--accent-glow);"></i>
+                    Start answering questions to see your subject performance!
+                `;
+                return;
+            }
+
+            const sorted = [...subjects].sort((a, b) => b.accuracy - a.accuracy);
+
+            sorted.forEach(sub => {
+                const color = sub.color || '#7C3AED';
+                const trendIcon = sub.trend === 'up' ? '⬆' : sub.trend === 'down' ? '⬇' : '➡';
+                const trendClass = sub.trend === 'up' ? 'kpi-trend-up' : sub.trend === 'down' ? 'kpi-trend-down' : '';
+
+                const item = document.createElement('div');
+                item.className = 'subject-item';
+                item.innerHTML = `
+                    <span class="subject-name">${escapeHTML(sub.name)}</span>
+                    <div class="subject-bar-track">
+                        <div class="subject-bar-fill" style="width: ${sub.accuracy}%; background: ${color};">
+                            ${sub.accuracy > 30 ? sub.accuracy + '%' : ''}
+                        </div>
+                    </div>
+                    <span class="subject-accuracy">${sub.accuracy}%</span>
+                    <span class="subject-trend ${trendClass}">${trendIcon}</span>
+                `;
+                container.appendChild(item);
+            });
+
+            const weakest = sorted[sorted.length - 1];
+            const strongest = sorted[0];
+            const insight = document.getElementById('subject-insight');
+            insight.innerHTML = `
+                <i class="fas fa-lightbulb" style="color:var(--accent-glow);"></i>
+                <strong>${escapeHTML(strongest.name)}</strong> is your strongest subject (${strongest.accuracy}%).
+                <strong>${escapeHTML(weakest.name)}</strong> needs attention (${weakest.accuracy}%).
+                ${weakest.accuracy < 50 ? `Start with basics and practice daily.` : `You're almost there! Keep practicing.`}
+            `;
+        }
+
+        function renderBarChart(containerId, data, valueKey, barClass) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                container.innerHTML = `
+                    <div style="width:100%;text-align:center;color:var(--text-placeholder);font-size:0.85rem;padding-top:40px;">
+                        <i class="fas fa-chart-simple" style="display:block;font-size:1.5rem;margin-bottom:8px;"></i>
+                        No data yet
+                    </div>
+                `;
+                return;
+            }
+
+            const maxVal = Math.max(...data.map(d => Number(d[valueKey]) || 0), 1);
+
+            data.forEach(item => {
+                const val = Number(item[valueKey]) || 0;
+                const heightPct = Math.round((val / maxVal) * 100);
+                const group = document.createElement('div');
+                group.className = 'bar-group';
+                group.innerHTML = `
+                    <span class="bar-val">${val}</span>
+                    <div class="bar ${barClass}" style="height: ${Math.max(heightPct, 4)}%;"></div>
+                    <span class="bar-lbl">${escapeHTML(item.day_label)}</span>
+                `;
+                container.appendChild(group);
+            });
+        }
+
+        function renderChartInsights(data, containerId, type) {
+            const container = document.getElementById(containerId);
+
+            if (!data || data.length === 0) {
+                if (type === 'tasks') {
+                    container.innerHTML = `<i class="fas fa-info-circle"></i> Complete tasks to see your progress here.`;
+                } else {
+                    container.innerHTML = `<i class="fas fa-info-circle"></i> Use the Pomodoro timer to track focus time.`;
+                }
+                return;
+            }
+
+            // Find best day
+            const maxVal = Math.max(...data.map(d => Number(d[type === 'tasks' ? 'tasks_done' : 'minutes_studied']) || 0));
+            const bestDay = data.find(d => Number(d[type === 'tasks' ? 'tasks_done' : 'minutes_studied']) === maxVal);
+
+            if (type === 'tasks') {
+                if (maxVal === 0) {
+                    container.innerHTML = `<i class="fas fa-info-circle"></i> No tasks completed yet. Start with a small task!`;
+                } else {
+                    container.innerHTML = `<i class="fas fa-chart-line"></i> Your best day was <strong>${bestDay?.day_label || '—'}</strong> with ${maxVal} tasks completed!`;
+                }
+            } else {
+                if (maxVal === 0) {
+                    container.innerHTML = `<i class="fas fa-info-circle"></i> No focus time tracked yet. Start a Pomodoro session!`;
+                } else {
+                    container.innerHTML = `<i class="fas fa-clock"></i> Your most focused day was <strong>${bestDay?.day_label || '—'}</strong> with ${maxVal} minutes studied!`;
+                }
+            }
+        }
+
+        function renderProgressGoals(goals) {
+            const container = document.getElementById('progress-goals-list');
+
+            if (!goals || goals.length === 0) {
+                container.innerHTML = `
+                    <p class="goals-empty">
+                        <i class="fas fa-info-circle" style="margin-right:6px;"></i>
+                        No active weekly goals. Go to <a href="hub.html" style="color:var(--accent-glow);text-decoration:none;font-weight:600;">Hub → Goals</a> to set one!
+                    </p>
+                `;
+                return;
+            }
+
+            container.innerHTML = goals.map(g => {
+                const pct = Math.min(Math.round((g.current_minutes / g.target_minutes) * 100), 100) || 0;
+                const curH = (g.current_minutes / 60).toFixed(1);
+                const tgtH = (g.target_minutes / 60).toFixed(1);
+                const remaining = Math.max(0, g.target_minutes - g.current_minutes);
+                const remainingH = (remaining / 60).toFixed(1);
+
+                return `
+                    <div class="goal-progress-item">
+                        <div class="goal-progress-header">
+                            <span>${escapeHTML(g.title)}</span>
+                            <span>${pct}%</span>
+                        </div>
+                        <div class="goal-progress-track">
+                            <div class="goal-progress-fill" style="width: ${pct}%;"></div>
+                        </div>
+                        <div class="goal-progress-sub">
+                            <span>${curH}h / ${tgtH}h this week</span>
+                            <span>${remainingH}h remaining</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Stretch goal
+            const goal = goals[0];
+            if (goal) {
+                const pct = Math.min(Math.round((goal.current_minutes / goal.target_minutes) * 100), 100);
+                const stretchTarget = Math.round(goal.target_minutes * 1.25);
+                const stretchH = (stretchTarget / 60).toFixed(1);
+                const curH = (goal.current_minutes / 60).toFixed(1);
+
+                const stretchHTML = document.createElement('div');
+                stretchHTML.className = 'goal-stretch';
+                if (pct >= 80) {
+                    stretchHTML.innerHTML = `
+                        🚀 You're crushing it! <strong>${curH}h</strong> done this week.
+                        Try pushing to <strong>${stretchH}h</strong> for a new personal best!
+                    `;
+                } else if (pct >= 50) {
+                    stretchHTML.innerHTML = `
+                        💪 Halfway there! You've done <strong>${curH}h</strong> this week.
+                        The stretch goal is <strong>${stretchH}h</strong> — you can do it!
+                    `;
+                } else if (pct > 0) {
+                    stretchHTML.innerHTML = `
+                        📚 Great start! You've done <strong>${curH}h</strong> this week.
+                        Focus on consistency — try to study a little each day.
+                    `;
+                } else {
+                    stretchHTML.innerHTML = `
+                        🎯 Set a goal and start tracking! Every minute counts toward your target.
+                    `;
+                }
+                container.appendChild(stretchHTML);
+            }
+        }
+
+        function renderAchievementTimeline(achievements) {
+            const container = document.getElementById('achievement-timeline');
+            const nextMilestoneContainer = document.getElementById('next-milestone');
+
+            if (!achievements || achievements.length === 0) {
+                container.innerHTML = `
+                    <div class="timeline-item" style="color:var(--text-secondary);font-size:var(--font-size-sm);">
+                        <div class="timeline-dot locked"></div>
+                        <div class="timeline-item-content">
+                            <span class="timeline-item-title">No achievements yet</span>
+                            <span class="timeline-item-badge locked">🔒 Locked</span>
+                        </div>
+                    </div>
+                `;
+                nextMilestoneContainer.innerHTML = `
+                    <div class="next-milestone-header">
+                        <span>🎯 First Achievement: Answer 1 Question</span>
+                        <span>0%</span>
+                    </div>
+                    <div class="next-milestone-track">
+                        <div class="next-milestone-fill" style="width: 0%;"></div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Show unlocked achievements
+            const unlocked = achievements.filter(a => a.unlocked_at);
+            const locked = achievements.filter(a => !a.unlocked_at);
+
+            if (unlocked.length === 0) {
+                container.innerHTML = `
+                    <div class="timeline-item" style="color:var(--text-secondary);font-size:var(--font-size-sm);">
+                        <div class="timeline-dot locked"></div>
+                        <div class="timeline-item-content">
+                            <span class="timeline-item-title">No achievements unlocked yet</span>
+                            <span class="timeline-item-badge locked">🔒 Locked</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Show unlocked achievements
+                unlocked.forEach(ach => {
+                    const item = document.createElement('div');
+                    item.className = 'timeline-item';
+                    item.innerHTML = `
+                        <div class="timeline-dot">
+                            <i class="fas fa-check" style="font-size:0.5rem;"></i>
+                        </div>
+                        <div class="timeline-item-content">
+                            <div>
+                                <span class="timeline-item-title">
+                                    <i class="fas ${ach.icon || 'fa-star'}" style="color:var(--accent-glow);margin-right:6px;"></i>
+                                    ${escapeHTML(ach.name)}
+                                </span>
+                                <span class="timeline-item-badge unlocked">✅ Unlocked</span>
+                            </div>
+                            <span class="timeline-item-date">${formatDate(ach.unlocked_at)}</span>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+
+            // Next milestone (first locked achievement)
+            const nextMilestone = locked.length > 0 ? locked[0] : null;
+
+            if (nextMilestone) {
+                // Calculate progress based on achievement criteria (simplified)
+                const progress = Math.min(Math.round((unlocked.length / (unlocked.length + 1)) * 100), 95);
+                nextMilestoneContainer.innerHTML = `
+                    <div class="next-milestone-header">
+                        <span>🎯 Next: ${escapeHTML(nextMilestone.name)}</span>
+                        <span>${progress}%</span>
+                    </div>
+                    <div class="next-milestone-track">
+                        <div class="next-milestone-fill" style="width: ${progress}%;"></div>
+                    </div>
+                `;
+            } else {
+                nextMilestoneContainer.innerHTML = `
+                    <div style="text-align:center;color:var(--text-secondary);font-size:var(--font-size-sm);">
+                        🎉 All achievements unlocked! You're a legend!
+                    </div>
+                `;
+            }
+        }
+
+        function renderStreakJourney(currentStreak) {
+            const container = document.getElementById('streak-grid');
+            container.innerHTML = '';
+
+            // Show last 30 days
+            const totalDays = 30;
+            const today = new Date();
+
+            for (let i = totalDays - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+
+                const dayNum = date.getDate();
+                const isToday = i === 0;
+                const isActive = i < currentStreak;
+                const isMissed = i === currentStreak && currentStreak > 0;
+
+                const day = document.createElement('div');
+                day.className = 'streak-day';
+                if (isToday && isActive) {
+                    day.classList.add('today');
+                } else if (isActive) {
+                    day.classList.add('active');
+                } else if (isMissed) {
+                    day.classList.add('missed');
+                } else if (i > currentStreak) {
+                    day.classList.add('future');
+                }
+
+                day.innerHTML = `<span class="day-num">${dayNum}</span>`;
+                container.appendChild(day);
+            }
+
+            // Status
+            const statusContainer = document.getElementById('streak-status');
+            const username = localStorage.getItem('username') || 'Learner';
+
+            if (currentStreak >= 14) {
+                statusContainer.innerHTML = `
+                    <span class="streak-emoji">🏆</span>
+                    <div class="streak-text">${currentStreak} days strong, ${username}! You're unstoppable! 🔥</div>
+                    <div class="streak-sub">Keep this momentum going — you're inspiring!</div>
+                `;
+            } else if (currentStreak >= 7) {
+                statusContainer.innerHTML = `
+                    <span class="streak-emoji">🔥</span>
+                    <div class="streak-text">${currentStreak} days in a row, ${username}! You're on fire! 🔥</div>
+                    <div class="streak-sub">${14 - currentStreak} more days to the "Dedicated Learner" badge!</div>
+                `;
+            } else if (currentStreak >= 3) {
+                statusContainer.innerHTML = `
+                    <span class="streak-emoji">💪</span>
+                    <div class="streak-text">${currentStreak}-day streak, ${username}! Building great habits!</div>
+                    <div class="streak-sub">${7 - currentStreak} more days to the "7-Day Streak" badge!</div>
+                `;
+            } else if (currentStreak > 0) {
+                statusContainer.innerHTML = `
+                    <span class="streak-emoji">🌟</span>
+                    <div class="streak-text">Day ${currentStreak} of your journey, ${username}!</div>
+                    <div class="streak-sub">Every day counts. Keep showing up!</div>
+                `;
+            } else {
+                statusContainer.innerHTML = `
+                    <span class="streak-emoji">🚀</span>
+                    <div class="streak-text">Start your streak today, ${username}!</div>
+                    <div class="streak-sub">Complete a study session to begin your journey.</div>
+                `;
+            }
+        }
+
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = getToken();
+            if (!token) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            // Populate sidebar user info
+            const username = localStorage.getItem('username') || '?';
+            document.getElementById('sb-avatar').textContent = username[0].toUpperCase();
+            document.getElementById('sb-name').textContent = username;
+
+            // Load progress data
+            loadProgressPanel();
+        });
+    </script>
+</body>
+</html>

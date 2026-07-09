@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow - Study Smarter. Score Higher.</title>
+    <link rel="stylesheet" href="css/index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/favicon_io/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon_io/favicon.ico">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- V5: GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+</head>
+
+<body>
+
+    <!-- V5 Floating Navigation -->
+    <div class="navbar-container" id="navbar-container">
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="index.html" class="nav-logo">
+                    📚 <span>StudyFlow</span>
+                </a>
+                <div class="nav-menu">
+                    <a href="#features-v3" class="nav-link">Features</a>
+                    <a href="#how-it-works" class="nav-link">How It Works</a>
+                    <a href="#testimonials-v3" class="nav-link">Reviews</a>
+                    <a href="auth.html" class="btn btn-primary">Get Started</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+
+    <!-- V5 Hero Section -->
+    <section class="hero">
+        <div class="hero-content container">
+            <div class="hero-text">
+                <h1 class="hero-title" id="hero-title">
+                    Study Smarter.<br><span class="gradient-text">Score Higher.</span>
+                </h1>
+                <p class="hero-subtitle" id="hero-subtitle">
+                    Your AI-powered study companion that adapts to your pace, tracks your goals, and makes every session count.
+                </p>
+                <div class="hero-actions" id="hero-actions">
+                    <a href="auth.html" class="btn btn-primary btn-large">
+                        <i class="fas fa-rocket"></i>
+                        Start Studying Free
+                    </a>
+                </div>
+                <div class="social-proof" id="social-proof">
+                    <div class="user-avatars">
+                        <img src="https://i.pravatar.cc/36?img=1" alt="User Avatar">
+                        <img src="https://i.pravatar.cc/36?img=2" alt="User Avatar">
+                        <img src="https://i.pravatar.cc/36?img=3" alt="User Avatar">
+                    </div>
+                    <p class="social-proof-text">Join <strong>10,000+</strong> students already using StudyFlow</p>
+                </div>
+            </div>
+            <div class="hero-visual-v5" id="hero-visual">
+                <div class="interactive-orb-container">
+                    <!-- Orbiting Cards -->
+                    <div class="orbiting-card" id="card1">
+                        <span class="card-title">Today's Goal</span>
+                        <span class="card-value" style="color: var(--accent-cyan);">Calculus</span>
+                    </div>
+                    <div class="orbiting-card" id="card2">
+                         <span class="card-title">Streak</span>
+                         <span class="card-value" style="color: var(--accent-orange);"><i class="fas fa-fire"></i> 14 Days</span>
+                    </div>
+                    <div class="orbiting-card" id="card3">
+                        <span class="card-title">Goal Reached! 🎯</span>
+                        <span class="card-value"><i class="fas fa-star" style="color: var(--warning-color);"></i> Math Whiz</span>
+                    </div>
+                    <div class="orbiting-card" id="card4">
+                        <span class="card-title">XP Earned</span>
+                        <span class="card-value" style="color: var(--accent-glow);">+250 XP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Features Section -->
+    <section id="features-v3">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>A Smarter Way to Learn</h2>
+                <p>StudyFlow isn't just another app. It's a comprehensive ecosystem designed for deep, engaging, and effective learning.</p>
+            </div>
+            <div class="features-grid-v3">
+                <div class="feature-card-v3 reveal">
+                    <div class="feature-card-inner">
+                        <i class="fas fa-brain feature-icon-v3"></i>
+                        <h3>AI-Powered Adaptation</h3>
+                        <p>Our core AI analyzes your learning patterns in real-time, personalizing every question to the perfect level of challenge.</p>
+                    </div>
+                </div>
+                <div class="feature-card-v3 reveal" style="transition-delay: 0.2s;">
+                     <div class="feature-card-inner">
+                        <i class="fas fa-gamepad feature-icon-v3" style="color: #fff"></i>
+                        <h3>Built to Keep You Going</h3>
+                        <p>Unlock achievements, earn XP, and maintain streaks. Learning feels less like a chore and more like an exciting adventure.</p>
+                    </div>
+                </div>
+                <div class="feature-card-v3 reveal" style="transition-delay: 0.4s;">
+                     <div class="feature-card-inner">
+                        <i class="fas fa-universal-access feature-icon-v3"></i>
+                        <h3>For Every Kind of Learner</h3>
+                        <p>From day one, we've focused on inclusivity, ensuring every learner has the tools they need to succeed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Get Started in Seconds</h2>
+                <p>Embark on your personalized learning journey with three simple steps.</p>
+            </div>
+            <div class="how-it-works-grid">
+                <div class="how-step reveal">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <h3>Create Your Account</h3>
+                        <p>A quick and secure sign-up process gets you into the action without any hassle. Your study journey is just a click away.</p>
+                    </div>
+                </div>
+                <div class="how-step reveal" style="transition-delay: 0.2s;">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <h3>Set Your First Daily Goal</h3>
+                        <p>StudyFlow immediately assesses your needs and generates a personalized daily goal to kickstart your learning.</p>
+                    </div>
+                </div>
+                <div class="how-step reveal" style="transition-delay: 0.4s;">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <h3>Track Progress, Crush Goals</h3>
+                        <p>Watch your knowledge, XP, and skills grow. Our intuitive dashboard shows your progress and celebrates your achievements.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Testimonials Section -->
+    <section id="testimonials-v3">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Loved by Students Everywhere</h2>
+                <p>We're proud to be making a difference in the lives of learners.</p>
+            </div>
+            <div class="testimonials-grid-v3">
+                <div class="testimonial-card-v3 reveal">
+                    <i class="fas fa-quote-right quote-icon"></i>
+                    <p>"My exam prep finally feels organized. I hit my daily XP goals every day and my grades actually improved."</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/50?img=12" alt="Avatar of Riya S.">
+                        <span>Riya S. - Engineering Student</span>
+                    </div>
+                </div>
+                <div class="testimonial-card-v3 reveal" style="transition-delay: 0.2s;">
+                    <i class="fas fa-quote-right quote-icon"></i>
+                    <p>"The adaptive questions are actually tough at first, but they level you up fast. Way better than random YouTube videos."</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/50?img=5" alt="Avatar of Arjun M.">
+                        <span>Arjun M. - 12th Grade</span>
+                    </div>
+                </div>
+                <div class="testimonial-card-v3 reveal" style="transition-delay: 0.4s;">
+                    <i class="fas fa-quote-right quote-icon"></i>
+                    <p>"I love the streak system. Missing a day feels criminal now 😅"</p>
+                    <div class="testimonial-author">
+                        <img src="https://i.pravatar.cc/50?img=7" alt="Avatar of Priya">
+                        <span>Priya - B.Com 2nd Year</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-v3">
+        <div class="container">
+            <div class="cta-content reveal">
+                <h2>Ready to Transform Learning?</h2>
+                <p>Join thousands of learners on a journey to a smarter, more confident future. Your first goal is waiting.</p>
+                <a href="auth.html" class="btn btn-primary btn-large">
+                    <i class="fas fa-arrow-right"></i>
+                    Get Started for Free
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo">
+                         📚 <span>StudyFlow</span>
+                    </a>
+                    <p>AI-powered learning that adapts to you.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Product</h4>
+                        <a href="#features-v3">Features</a><br>
+                        <a href="#how-it-works">How It Works</a><br>
+                        <a href="#">Pricing</a><br>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Support</h4>
+                        <a href="#">Help Center</a><br>
+                        <a href="#">Contact Us</a><br>
+                        <a href="#">Privacy Policy</a><br>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Connect</h4>
+                        <a href="#"><i class="fab fa-twitter"></i> Twitter</a><br>
+                        <a href="#"><i class="fab fa-discord"></i> Discord</a><br>
+                        <a href="#"><i class="fab fa-github"></i> GitHub</a><br>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 StudyFlow. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // V5: GSAP Entrance Animation
+            const tl = gsap.timeline({ defaults: { ease: "power3.out", duration: 0.8 } });
+            
+            tl.fromTo("#navbar-container", { y: -80, opacity: 0 }, { y: 0, opacity: 1 }, 0.4)
+              .fromTo("#hero-title", { y: 40, opacity: 0 }, { y: 0, opacity: 1 }, 0.6)
+              .fromTo("#hero-subtitle", { y: 40, opacity: 0 }, { y: 0, opacity: 1 }, 0.8)
+              .fromTo("#hero-actions", { y: 40, opacity: 0 }, { y: 0, opacity: 1 }, 1.0)
+              .fromTo("#social-proof", { y: 40, opacity: 0 }, { y: 0, opacity: 1 }, 1.2)
+              .fromTo(".orbiting-card", { scale: 0.5, opacity: 0, y: 20 }, { scale: 1, opacity: 1, y: 0, stagger: 0.15 }, 1.5);
+            
+            
+            // V5: Mouse Parallax for Interactive Orb
+            const orbContainer = document.querySelector('.interactive-orb-container');
+            if(orbContainer) {
+                const cards = document.querySelectorAll('.orbiting-card');
+                
+                // Recalculated positions for better spacing
+                const cardPositions = [
+                    { x: -180, y: -120, z: 50 },  // card1 (Top-Left)
+                    { x: 180, y: -100, z: 80 },  // card2 (Streak, Top-Right)
+                    { x: -200, y: 120, z: 0 },    // card3 (Bottom-Left)
+                    { x: 220, y: 100, z: 120 }    // card4 (XP Gained, Bottom-Right)
+                ];
+                
+                // Set initial positions
+                gsap.set(cards, {
+                    x: (i) => cardPositions[i].x,
+                    y: (i) => cardPositions[i].y,
+                    z: (i) => cardPositions[i].z
+                });
+
+                window.addEventListener('mousemove', (e) => {
+                    if (window.innerWidth < 992) return;
+                    const { clientX, clientY } = e;
+                    const x = (clientX / window.innerWidth) - 0.5;
+                    const y = (clientY / window.innerHeight) - 0.5;
+
+                    gsap.to(orbContainer, {
+                        rotationY: x * 25,
+                        rotationX: -y * 25,
+                        ease: 'power2.out',
+                        duration: 1
+                    });
+                });
+            }
+
+            // V5: Scroll reveal animations for other sections
+            const revealElements = document.querySelectorAll('.reveal');
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.15
+            });
+
+            revealElements.forEach(el => {
+                revealObserver.observe(el);
+            });
+        });
+    </script>
+</body>
+
+</html>

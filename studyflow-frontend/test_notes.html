@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Save Note</title>
+    <style>
+        body { font-family: Arial; padding: 40px; max-width: 600px; margin: 0 auto; background: #f5f4fb; }
+        .card { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 16px; }
+        textarea { width: 100%; height: 150px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        button { padding: 10px 24px; background: #7C3AED; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-right: 8px; }
+        button:hover { background: #5B21B6; }
+        .log { background: #1e1b4b; color: #c4b5fd; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 12px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; }
+        .status { padding: 12px; border-radius: 8px; margin-bottom: 16px; font-weight: 600; }
+        .status.success { background: #dcfce7; color: #059669; }
+        .status.error { background: #fee2e2; color: #dc2626; }
+        .status.info { background: #ede9fe; color: #7c3aed; }
+    </style>
+</head>
+<body>
+
+    <h1>🧪 Test Save Note</h1>
+    <p>This page tests ONLY the save functionality.</p>
+
+    <div id="status" class="status info">Ready. Open console (F12) to see logs.</div>
+
+    <div class="card">
+        <h3>📝 Note Content</h3>
+        <textarea id="note-content" placeholder="Type something here...">Test note content</textarea>
+        <br><br>
+        <button onclick="testSave()">💾 Save Note</button>
+        <button onclick="testGet()">📋 Get Notes</button>
+        <button onclick="clearLog()">🗑️ Clear Log</button>
+    </div>
+
+    <div class="card">
+        <h3>📋 Debug Log</h3>
+        <div class="log" id="log">Waiting for actions...</div>
+    </div>
+
+    <script>
+        // ──────────────────────────────────────────────────────────────
+        // CONFIG — Change this if your backend is on a different port
+        // ──────────────────────────────────────────────────────────────
+
+        // Try different ports if 8000 doesn't work
+        const API = 'http://127.0.0.1:8000';
+        // const API = 'http://localhost:8000';
+
+        const token = localStorage.getItem('studyflowToken');
+
+        // ── Logging ──
+        function log(msg, type = 'info') {
+            const el = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            el.innerHTML = `[${timestamp}] ${icon} ${msg}\n` + el.innerHTML;
+            console.log(`[${type}]`, msg);
+            
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = msg;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = 'Log cleared.';
+        }
+
+        // ── Check Token ──
+        log(`🔑 Token: ${token ? '✅ Present (' + token.substring(0, 20) + '...)' : '❌ MISSING'}`, token ? 'success' : 'error');
+        log(`🌐 API URL: ${API}`);
+
+        // ── Test Save ──
+        async function testSave() {
+            log('💾 Saving note...', 'info');
+            
+            const content = document.getElementById('note-content').value;
+            const payload = {
+                title: 'Test Note',
+                content: content,
+                tags: ['test'],
+                color: '#FAFAFE',
+                is_pinned: false
+            };
+
+            log(`📦 Payload: ${JSON.stringify(payload)}`);
+            log(`🔑 Token: ${token ? 'Present' : 'MISSING'}`);
+
+            if (!token) {
+                log('❌ No token! Go to auth.html and login first.', 'error');
+                return;
+            }
+
+            try {
+                const url = `${API}/notes`;
+                log(`🌐 Fetching: ${url}`);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                log(`📡 Response status: ${response.status} ${response.statusText}`);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log(`❌ Error: ${response.status} - ${errorText}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
+                log(`✅ Success! Note saved with ID: ${data.id}`, 'success');
+                log(`📝 Response: ${JSON.stringify(data)}`);
+                
+            } catch (error) {
+                log(`❌ Fetch error: ${error.message}`, 'error');
+                log(`💡 Make sure backend is running: docker-compose up -d`, 'error');
+            }
+        }
+
+        // ── Test Get Notes ──
+        async function testGet() {
+            log('📋 Getting notes...', 'info');
+
+            if (!token) {
+                log('❌ No token! Go to auth.html and login first.', 'error');
+                return;
+            }
+
+            try {
+                const url = `${API}/notes`;
+                log(`🌐 Fetching: ${url}`);
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                log(`📡 Response status: ${response.status} ${response.statusText}`);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log(`❌ Error: ${response.status} - ${errorText}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
+                log(`✅ Found ${data.length} notes`, 'success');
+                data.forEach((note, i) => {
+                    log(`  ${i+1}. ${note.title} (ID: ${note.id})`);
+                });
+                
+            } catch (error) {
+                log(`❌ Fetch error: ${error.message}`, 'error');
+                log(`💡 Make sure backend is running: docker-compose up -d`, 'error');
+            }
+        }
+
+        // ── Auto-test on load ──
+        setTimeout(() => {
+            log('🚀 Auto-testing: Getting notes...', 'info');
+            testGet();
+        }, 500);
+
+        log('💡 Click "Save Note" to test saving');
+        log('💡 Click "Get Notes" to list all notes');
+    </script>
+</body>
+</html>

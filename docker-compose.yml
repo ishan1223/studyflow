@@ -1,0 +1,34 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/studyflow
+      # NEW: Tell the transformers library where to save models
+      - TRANSFORMERS_CACHE=/app/model_cache 
+    volumes:
+      - .:/app
+      # NEW: Link the local cache folder to the container's cache folder
+      # The model will be saved here on your actual computer.
+      - ./model_cache:/app/model_cache 
+    depends_on:
+      - db
+
+  # This is the service for your PostgreSQL database.
+  db:
+    image: postgres:14-alpine # Uses the official Postgres image from Docker Hub.
+    environment:
+      # Sets up the database with a default user, password, and database name.
+      # IMPORTANT: For a real project, these would be secrets!
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=studyflow
+    volumes:
+      # This part is crucial. It creates a special volume to make sure your
+      # database data is SAVED even if you stop and restart the container.
+      - postgres_data:/var/lib/postgresql/data/
+
+# This declares the special volume for the database data.
+volumes:
+  postgres_data:

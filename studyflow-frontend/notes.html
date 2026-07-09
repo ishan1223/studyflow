@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow – Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        i.fas, i.far, i.fa { font-family: "Font Awesome 6 Free" !important; font-weight: 900 !important; }
+        i.fab { font-family: "Font Awesome 6 Brands" !important; font-weight: 400 !important; }
+
+        :root {
+            --accent: #7C3AED;
+            --accent-light: #EDE9FE;
+            --accent-dark: #5B21B6;
+            --success: #059669;
+            --error: #DC2626;
+            --bg: #F5F4FB;
+            --card: #FFFFFF;
+            --sidebar-bg: #1E1B4B;
+            --sidebar-text: #C4B5FD;
+            --text: #1E1B4B;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --font: 'Plus Jakarta Sans', sans-serif;
+            --sidebar-width: 240px;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            min-height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 200;
+        }
+        .sidebar-logo {
+            padding: 24px 20px 20px;
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 8px;
+        }
+        .sidebar-logo-icon {
+            width: 36px; height: 36px; background: var(--accent);
+            border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 1rem; flex-shrink: 0;
+        }
+        .sidebar-logo-text { font-size: 1.15rem; font-weight: 800; color: white; }
+        .sidebar-nav {
+            flex: 1; padding: 4px 12px;
+            display: flex; flex-direction: column; gap: 2px;
+        }
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 12px; border-radius: 10px;
+            text-decoration: none; color: var(--sidebar-text);
+            font-size: 0.88rem; font-weight: 600;
+            transition: all 0.2s; cursor: pointer;
+        }
+        .nav-link i { width: 18px; font-size: 0.9rem; }
+        .nav-link:hover { background: rgba(255,255,255,0.06); color: white; }
+        .nav-link.active { background: var(--accent); color: white; }
+        .sidebar-bottom {
+            padding: 12px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .user-pill {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 10px; margin-bottom: 4px;
+        }
+        .user-avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--accent); display: flex; align-items: center;
+            justify-content: center; color: white; font-weight: 700;
+            font-size: 0.85rem; flex-shrink: 0;
+        }
+        .user-name { font-size: 0.85rem; font-weight: 700; color: white; }
+        .user-tag { font-size: 0.72rem; color: var(--sidebar-text); }
+
+        /* ── MAIN ── */
+        .main-wrap {
+            margin-left: var(--sidebar-width);
+            flex: 1; display: flex; flex-direction: column;
+        }
+        .topbar {
+            height: 68px; background: var(--card);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .topbar-title { font-size: 1rem; font-weight: 800; }
+        .topbar-sub { font-size: 0.8rem; color: var(--text-secondary); }
+        .btn-new {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 20px; background: var(--accent); color: white;
+            border: none; border-radius: 10px; font-family: var(--font);
+            font-size: 0.88rem; font-weight: 700; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-new:hover { background: var(--accent-dark); }
+
+        .page-content { padding: 32px; }
+
+        /* ── INSTRUCTIONS CARD ── */
+        .instructions-card {
+            background: linear-gradient(135deg, var(--accent) 0%, #A855F7 100%);
+            border-radius: 16px; padding: 28px 32px;
+            color: white; margin-bottom: 28px;
+            display: flex; align-items: flex-start; gap: 24px;
+        }
+        .instr-icon {
+            width: 52px; height: 52px; border-radius: 14px;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; flex-shrink: 0;
+        }
+        .instr-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+        .instr-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+        .instr-list li {
+            font-size: 0.85rem; opacity: 0.9;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .instr-list li::before { content: '→'; font-weight: 700; }
+
+        /* ── SECTION LABEL ── */
+        .section-label {
+            font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--text-secondary); margin-bottom: 14px;
+        }
+
+        /* ── PROJECTS GRID ── */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .blank-card {
+            border: 2px dashed var(--border);
+            border-radius: 16px; padding: 32px 20px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 10px; cursor: pointer;
+            transition: all 0.2s; text-align: center;
+            background: transparent; min-height: 180px;
+        }
+        .blank-card:hover { border-color: var(--accent); background: var(--accent-light); }
+        .blank-card i { font-size: 1.8rem; color: var(--text-secondary); }
+        .blank-card:hover i { color: var(--accent); }
+        .blank-card span { font-size: 0.88rem; font-weight: 700; color: var(--text-secondary); }
+        .blank-card:hover span { color: var(--accent); }
+
+        .note-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px; padding: 20px;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column;
+            gap: 10px; min-height: 180px;
+            position: relative; overflow: hidden;
+        }
+        .note-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        }
+        .note-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        .note-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .note-name { font-size: 0.95rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+        .note-actions-top { display: flex; gap: 4px; }
+        .icon-btn {
+            width: 28px; height: 28px; border-radius: 6px;
+            border: none; background: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.78rem; color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        .icon-btn:hover { background: var(--bg); color: var(--text); }
+        .icon-btn.delete:hover { background: #FEE2E2; color: var(--error); }
+        .note-preview {
+            font-size: 0.8rem; color: var(--text-secondary);
+            line-height: 1.5; flex: 1;
+            display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3;
+            -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .note-meta {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 0.73rem; color: var(--text-secondary);
+        }
+        .note-subject-tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 8px; border-radius: 6px;
+            font-size: 0.72rem; font-weight: 600;
+        }
+
+        /* ── EDITOR MODAL ── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(30,27,75,0.45);
+            backdrop-filter: blur(6px);
+            z-index: 500;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.25s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .editor-modal {
+            background: var(--card);
+            border-radius: 20px;
+            width: 90%; max-width: 720px;
+            max-height: 90vh;
+            display: flex; flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            transform: translateY(20px); transition: transform 0.25s;
+            overflow: hidden;
+        }
+        .modal-overlay.active .editor-modal { transform: translateY(0); }
+
+        .editor-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .editor-name-input {
+            flex: 1; font-family: var(--font);
+            font-size: 1.05rem; font-weight: 800;
+            color: var(--text); border: none; outline: none;
+            background: transparent;
+        }
+        .editor-name-input::placeholder { color: var(--border); }
+        .editor-close {
+            width: 32px; height: 32px; border-radius: 8px;
+            border: none; background: var(--bg); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-secondary); font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .editor-close:hover { background: #FEE2E2; color: var(--error); }
+
+        .editor-meta {
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        }
+        .meta-select {
+            padding: 6px 12px; border: 1.5px solid var(--border);
+            border-radius: 8px; font-family: var(--font);
+            font-size: 0.82rem; color: var(--text);
+            background: var(--card); outline: none; cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .meta-select:focus { border-color: var(--accent); }
+        .auto-save-indicator {
+            margin-left: auto; font-size: 0.75rem;
+            color: var(--text-secondary); display: flex;
+            align-items: center; gap: 5px;
+        }
+        .save-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--success); transition: background 0.3s;
+        }
+        .save-dot.saving { background: #D97706; }
+
+        .editor-body { flex: 1; overflow-y: auto; padding: 24px; }
+        .editor-textarea {
+            width: 100%; min-height: 280px;
+            font-family: var(--font); font-size: 0.92rem;
+            color: var(--text); line-height: 1.8;
+            border: none; outline: none; resize: none;
+            background: transparent;
+        }
+        .editor-textarea::placeholder { color: #C4B5FD; }
+
+        .editor-footer {
+            padding: 14px 24px;
+            border-top: 1px solid var(--border);
+            display: flex; align-items: center; gap: 10px;
+            background: #FAFAFA;
+        }
+        .editor-word-count {
+            font-size: 0.75rem; color: var(--text-secondary);
+            margin-right: auto;
+        }
+        .btn-record {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 8px;
+            font-family: var(--font); font-size: 0.82rem; font-weight: 700;
+            cursor: pointer; border: 1.5px solid var(--border);
+            background: var(--card); color: var(--text);
+            transition: all 0.2s;
+        }
+        .btn-record:hover { border-color: var(--error); color: var(--error); }
+        .btn-record.recording {
+            background: #FEE2E2; border-color: var(--error);
+            color: var(--error); animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        .btn-popup {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 8px;
+            font-family: var(--font); font-size: 0.82rem; font-weight: 700;
+            cursor: pointer; border: 1.5px solid var(--accent);
+            background: transparent; color: var(--accent);
+            transition: all 0.2s;
+        }
+        .btn-popup:hover { background: var(--accent-light); }
+
+        .btn-save {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 20px; border-radius: 8px;
+            font-family: var(--font); font-size: 0.82rem; font-weight: 700;
+            cursor: pointer; border: none;
+            background: var(--accent); color: white;
+            transition: background 0.2s;
+        }
+        .btn-save:hover { background: var(--accent-dark); }
+
+        .empty-state {
+            text-align: center; padding: 48px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state i { font-size: 2.5rem; opacity: 0.3; margin-bottom: 12px; display: block; }
+        .empty-state p { font-size: 0.88rem; font-weight: 500; }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            padding: 12px 20px; z-index: 9999;
+            display: flex; align-items: center; gap: 10px;
+            transform: translateY(80px); opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.3s;
+            pointer-events: none; font-size: 0.875rem; font-weight: 600;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--error); }
+
+        @media (max-width: 768px) {
+            .main-wrap { margin-left: 0; }
+            .sidebar { display: none; }
+            .page-content { padding: 16px; }
+            .instructions-card { flex-direction: column; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="js/config.js"></script>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <a href="home.html" class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <span class="sidebar-logo-text">StudyFlow</span>
+    </a>
+    <nav class="sidebar-nav">
+        <a href="home.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+        <a href="hub.html" class="nav-link"><i class="fas fa-th-large"></i> Hub</a>
+        <a href="notes.html" class="nav-link active"><i class="fas fa-sticky-note"></i> Notes</a>
+        <a href="progress.html" class="nav-link"><i class="fas fa-chart-line"></i> Progress</a>
+        <a href="tasks.html" class="nav-link"><i class="fas fa-calendar-alt"></i> Task Scheduler</a>
+        <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+    </nav>
+    <div class="sidebar-bottom">
+        <div class="user-pill">
+            <div class="user-avatar" id="sb-avatar">?</div>
+            <div>
+                <div class="user-name" id="sb-name">...</div>
+                <div class="user-tag">Student</div>
+            </div>
+        </div>
+        <button onclick="logout()" style="width:100%;padding:9px 12px;background:#DC2626;color:white;border:none;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:0.82rem;cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+    <header class="topbar">
+        <div>
+            <div class="topbar-title">My Notes</div>
+            <div class="topbar-sub">Create projects, take notes, record & transcribe</div>
+        </div>
+        <button class="btn-new" onclick="openEditor(null)">
+            <i class="fas fa-plus"></i> New Project
+        </button>
+    </header>
+
+    <main class="page-content">
+
+        <!-- Instructions -->
+        <div class="instructions-card">
+            <div class="instr-icon"><i class="fas fa-lightbulb"></i></div>
+            <div>
+                <div class="instr-title">How Notes Work</div>
+                <ul class="instr-list">
+                    <li>Create a <strong>project</strong> for each subject or topic you're studying</li>
+                    <li>Open a project to write, paste, or type notes freely</li>
+                    <li>Click <strong>Open as Popup</strong> to keep notes open while watching YouTube or browsing resources</li>
+                    <li>Use the <strong>Record</strong> button to transcribe your voice into notes in real time</li>
+                    <li>Notes auto-save every 10 seconds — no need to manually save</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Projects -->
+        <div class="section-label">My Projects</div>
+        <div class="projects-grid" id="projects-grid">
+            <!-- Blank card always first -->
+            <div class="blank-card" onclick="openEditor(null)">
+                <i class="fas fa-plus-circle"></i>
+                <span>Blank Project</span>
+                <span style="font-size:0.75rem; font-weight:500; color:#9CA3AF;">Start from scratch</span>
+            </div>
+            <!-- Notes loaded here -->
+        </div>
+
+    </main>
+</div>
+
+<!-- EDITOR MODAL -->
+<div class="modal-overlay" id="editor-overlay">
+    <div class="editor-modal">
+        <div class="editor-header">
+            <input type="text" class="editor-name-input" id="editor-name" placeholder="Project name..." />
+            <button class="editor-close" onclick="closeEditor()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="editor-meta">
+            <select class="meta-select" id="editor-subject">
+                <option value="">No subject linked</option>
+            </select>
+            <select class="meta-select" id="editor-chapter">
+                <option value="">No chapter linked</option>
+            </select>
+            <div class="auto-save-indicator">
+                <div class="save-dot" id="save-dot"></div>
+                <span id="save-status">Saved</span>
+            </div>
+        </div>
+        <div class="editor-body">
+            <textarea class="editor-textarea" id="editor-textarea"
+                placeholder="Start writing your notes here...&#10;&#10;Tip: You can paste content, type freely, or use the Record button below to transcribe your voice."></textarea>
+        </div>
+        <div class="editor-footer">
+            <span class="editor-word-count" id="word-count">0 words</span>
+            <button class="btn-record" id="record-btn" onclick="toggleRecording()">
+                <i class="fas fa-microphone"></i> Record
+            </button>
+            <button class="btn-popup" onclick="openAsPopup()">
+                <i class="fas fa-external-link-alt"></i> Open as Popup
+            </button>
+            <button class="btn-save" onclick="saveNote()">
+                <i class="fas fa-save"></i> Save
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script>
+    // ──────────────────────────────────────────────────────────────
+    // 📌 NOTES — StudyFlow (Demo Mode with localStorage)
+    // ──────────────────────────────────────────────────────────────
+
+    const API = 'http://127.0.0.1:8000';
+    const token = localStorage.getItem('studyflowToken');
+    const username = localStorage.getItem('username') || 'Learner';
+    const onboarding = JSON.parse(localStorage.getItem('sf_onboarding') || 'null');
+
+    console.log('🔵 NOTES PAGE LOADED');
+    console.log('🔵 API:', API);
+    console.log('🔵 Token:', token ? '✅ Present' : '❌ Missing');
+    console.log('🔵 Username:', username);
+
+    // For demo with localStorage, we don't require a token.
+    // if (!token) { window.location.href = 'auth.html'; }
+
+    // Sidebar
+    const uname = username || '?';
+    document.getElementById('sb-avatar').textContent = uname[0].toUpperCase();
+    document.getElementById('sb-name').textContent = uname;
+
+    // ── Toast ──
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.className = 'toast show ' + type;
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        toast.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+        if (window.toastTimeout) clearTimeout(window.toastTimeout);
+        window.toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ── State ──
+    let allNotes = [];
+    let currentNoteId = null;
+    let autoSaveTimer = null;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+
+    // ── Local Storage Functions ──
+    function getNotesFromLocal() {
+        try {
+            const data = localStorage.getItem('studyflow_notes');
+            return data ? JSON.parse(data) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveNotesToLocal(notes) {
+        localStorage.setItem('studyflow_notes', JSON.stringify(notes));
+    }
+
+    function getNextId() {
+        const notes = getNotesFromLocal();
+        const maxId = notes.reduce((max, n) => Math.max(max, n.id || 0), 0);
+        return maxId + 1;
+    }
+
+    // ── Load Notes ──
+    function loadNotes() {
+        allNotes = getNotesFromLocal();
+        renderGrid();
+    }
+
+    // ── Render Grid ──
+    function renderGrid() {
+        const grid = document.getElementById('projects-grid');
+        grid.innerHTML = `
+            <div class="blank-card" onclick="openEditor(null)">
+                <i class="fas fa-plus-circle"></i>
+                <span>Blank Project</span>
+                <span style="font-size:0.75rem;font-weight:500;color:#9CA3AF;">Start from scratch</span>
+            </div>
+        `;
+
+        if (allNotes.length === 0) {
+            grid.insertAdjacentHTML('beforeend', `
+                <div class="empty-state" style="grid-column:1/-1; padding:32px;">
+                    <i class="fas fa-sticky-note"></i>
+                    <p>No projects yet. Click Blank Project to create your first one.</p>
+                </div>
+            `);
+            return;
+        }
+
+        allNotes.forEach(note => {
+            const color = '#7C3AED';
+            const wordCount = note.content ? note.content.trim().split(/\s+/).filter(Boolean).length : 0;
+            const updated = note.updated_at ? new Date(note.updated_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '';
+            grid.insertAdjacentHTML('beforeend', `
+                <div class="note-card" onclick="openEditor(${note.id})" style="--note-color:${color}">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${color};border-radius:16px 16px 0 0;"></div>
+                    <div class="note-card-top">
+                        <div class="note-name">${escHtml(note.title || 'Untitled')}</div>
+                        <div class="note-actions-top">
+                            <button class="icon-btn delete" onclick="event.stopPropagation(); deleteNote(${note.id})" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="note-preview">${escHtml((note.content || 'No content yet...').substring(0, 150))}</div>
+                    <div class="note-meta">
+                        <span>${wordCount} words</span>
+                        <span>${updated}</span>
+                    </div>
+                </div>
+            `);
+        });
+    }
+
+    function escHtml(str) {
+        return String(str || '').replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t]));
+    }
+
+    // ── Open Editor ──
+    function openEditor(id) {
+        currentNoteId = id;
+        const overlay = document.getElementById('editor-overlay');
+        const nameInput = document.getElementById('editor-name');
+        const textarea = document.getElementById('editor-textarea');
+
+        if (id) {
+            const note = allNotes.find(n => n.id === id);
+            if (!note) return;
+            nameInput.value = note.title || '';
+            textarea.value = note.content || '';
+        } else {
+            nameInput.value = '';
+            textarea.value = '';
+        }
+
+        updateWordCount();
+        overlay.classList.add('active');
+        setTimeout(() => textarea.focus(), 300);
+        startAutoSave();
+    }
+
+    function closeEditor() {
+        stopAutoSave();
+        stopRecording();
+        document.getElementById('editor-overlay').classList.remove('active');
+        currentNoteId = null;
+        loadNotes();
+    }
+
+    // ── Save Note ──
+    function saveNote(silent = false) {
+        const name = document.getElementById('editor-name').value.trim() || 'Untitled';
+        const content = document.getElementById('editor-textarea').value;
+        
+        let notes = getNotesFromLocal();
+        
+        if (currentNoteId) {
+            const index = notes.findIndex(n => n.id === currentNoteId);
+            if (index !== -1) {
+                notes[index] = { ...notes[index], title: name, content, updated_at: new Date().toISOString() };
+            }
+        } else {
+            const newNote = {
+                id: getNextId(),
+                title: name,
+                content: content,
+                color: '#FAFAFE',
+                tags: [],
+                is_pinned: false,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+            notes.push(newNote);
+            currentNoteId = newNote.id;
+        }
+        
+        saveNotesToLocal(notes);
+        setSaveStatus('saved');
+        if (!silent) {
+            showToast('Note saved! ✅');
+            loadNotes();
+        }
+    }
+
+    function deleteNote(id) {
+        if (!confirm('Delete this project?')) return;
+        let notes = getNotesFromLocal();
+        notes = notes.filter(n => n.id !== id);
+        saveNotesToLocal(notes);
+        showToast('Note deleted');
+        loadNotes();
+    }
+
+    // ── Auto Save ──
+    function startAutoSave() {
+        stopAutoSave();
+        autoSaveTimer = setInterval(() => saveNote(true), 10000);
+        document.getElementById('editor-textarea').addEventListener('input', updateWordCount);
+    }
+    function stopAutoSave() {
+        if (autoSaveTimer) { clearInterval(autoSaveTimer); autoSaveTimer = null; }
+    }
+
+    function setSaveStatus(status) {
+        const dot = document.getElementById('save-dot');
+        const label = document.getElementById('save-status');
+        dot.classList.toggle('saving', status === 'saving');
+        label.textContent = status === 'saving' ? 'Saving...' : 'Saved';
+    }
+
+    function updateWordCount() {
+        const text = document.getElementById('editor-textarea').value;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        document.getElementById('word-count').textContent = `${words} word${words !== 1 ? 's' : ''}`;
+    }
+
+    // ── Open as Popup ──
+    function openAsPopup() {
+        saveNote(true);
+        const name = document.getElementById('editor-name').value || 'Untitled';
+        const noteId = currentNoteId || '';
+        const popup = window.open(
+            `notes_popup.html?id=${noteId}&name=${encodeURIComponent(name)}`,
+            'studyflow-notes',
+            'width=420,height=580,toolbar=no,location=no,resizable=yes,scrollbars=yes'
+        );
+        if (!popup) {
+            showToast('⚠️ Popup blocked! Please allow popups for this site.', 'error');
+        } else {
+            showToast('Popup opened! 📝');
+        }
+    }
+
+    // ── Voice Recording ──
+    function toggleRecording() {
+        isRecording ? stopRecording() : startRecording();
+    }
+
+    function startRecording() {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                isRecording = true;
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    transcribeWithHF(audioBlob);
+                    stream.getTracks().forEach(t => t.stop());
+                };
+                mediaRecorder.start();
+                const btn = document.getElementById('record-btn');
+                btn.classList.add('recording');
+                btn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
+            })
+            .catch(err => alert('Microphone error: ' + err.message));
+    }
+
+    function stopRecording() {
+        if (mediaRecorder && isRecording) {
+            mediaRecorder.stop();
+            isRecording = false;
+        }
+        const btn = document.getElementById('record-btn');
+        btn.classList.remove('recording');
+        btn.innerHTML = '<i class="fas fa-microphone"></i> Record';
+    }
+
+    async function transcribeWithHF(audioBlob) {
+        const btn = document.getElementById('record-btn');
+        btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Transcribing...';
+        btn.disabled = true;
+        showToast('⏳ Transcribing...', 'info');
+        try {
+            const response = await fetch(
+                'https://api-inference.huggingface.co/models/openai/whisper-small',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${CONFIG.HF_TOKEN}`,
+                        'Content-Type': 'audio/webm',
+                    },
+                    body: audioBlob,
+                }
+            );
+            const data = await response.json();
+            if (data.error) { 
+                showToast('❌ ' + data.error, 'error');
+                return; 
+            }
+            const transcript = data.text || '';
+            if (transcript) {
+                const textarea = document.getElementById('editor-textarea');
+                textarea.value = textarea.value ? textarea.value + ' ' + transcript : transcript;
+                updateWordCount();
+                textarea.scrollTop = textarea.scrollHeight;
+                saveNote(true);
+                showToast('✅ Transcription done!', 'success');
+            } else {
+                showToast('⚠️ No speech detected', 'info');
+            }
+        } catch(err) {
+            showToast('❌ Error: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-microphone"></i> Record';
+        }
+    }
+
+    // ── Close on overlay click ──
+    document.getElementById('editor-overlay').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('editor-overlay')) closeEditor();
+    });
+
+    function logout() {
+        localStorage.removeItem('studyflowToken');
+        localStorage.removeItem('username');
+        localStorage.removeItem('sf_onboarding');
+        window.location.href = 'auth.html';
+    }
+
+    // ── Init ──
+    loadNotes();
+    console.log('📌 Notes page loaded. API:', API);
+    console.log('🔑 Token:', token ? '✅ Present' : '❌ Missing');
+</script>

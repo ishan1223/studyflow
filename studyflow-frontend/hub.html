@@ -1,0 +1,2516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub - StudyFlow</title>
+    <link rel="stylesheet" href="css/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>* { font-family: 'Plus Jakarta Sans', sans-serif !important; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/favicon_io/site.webmanifest">
+    <link rel="shortcut icon" href="/favicon_io/favicon.ico">
+    <meta name="theme-color" content="#ffffff">
+
+    <style>
+        i.fas, i.far, i.fa { font-family: "Font Awesome 6 Free" !important; font-weight: 900 !important; }
+        i.fab { font-family: "Font Awesome 6 Brands" !important; }
+        /* CSS resets & custom utilities overriding app.css for StudyHub layout */
+        body.app-body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Sticky Header */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            padding: 0 var(--spacing-xl);
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+        .header-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: var(--border-radius-pill);
+            transition: all var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tab-btn:hover {
+            color: var(--accent-glow);
+            background: rgba(124, 58, 237, 0.05);
+        }
+        .tab-btn.active {
+            background: var(--accent-glow);
+            color: white;
+            box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2);
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(124, 58, 237, 0.08);
+            color: var(--accent-glow);
+            padding: 6px 14px;
+            border-radius: var(--border-radius-pill);
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+        }
+
+        /* Hub Page Layout */
+        .hub-main {
+            margin-left: 240px;
+            padding: 2rem;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        .hub-tab-btn {
+            display:inline-flex; align-items:center; gap:6px;
+            padding:10px 18px; border:none; background:transparent;
+            font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem;
+            font-weight:600; color:#6B7280; cursor:pointer;
+            border-bottom:2px solid transparent; margin-bottom:-2px;
+            transition:all 0.2s; white-space:nowrap;
+        }
+        .hub-tab-btn:hover { color:#7C3AED; }
+        .hub-tab-btn.active { color:#7C3AED; border-bottom-color:#7C3AED; }
+
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Stats Bar (Todos) */
+        .todo-stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+        .todo-stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-md) var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            box-shadow: var(--shadow-md);
+        }
+        .todo-stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+        }
+        .todo-stat-card.pending .todo-stat-icon { background: rgba(99, 102, 241, 0.1); color: var(--accent-cyan); }
+        .todo-stat-card.completed .todo-stat-icon { background: rgba(22, 163, 74, 0.1); color: var(--success-color); }
+        .todo-stat-card.due-today .todo-stat-icon { background: rgba(245, 158, 11, 0.1); color: var(--accent-orange); }
+        .todo-stat-card.overdue .todo-stat-icon { background: rgba(239, 68, 68, 0.1); color: var(--error-color); }
+        .todo-stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .todo-stat-value {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        .todo-stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        /* Filters */
+        .todo-filters-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        .filter-btn-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: var(--border-radius-pill);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover {
+            border-color: var(--accent-glow);
+            color: var(--accent-glow);
+        }
+        .filter-btn.active {
+            background: var(--accent-glow);
+            border-color: var(--accent-glow);
+            color: white;
+        }
+
+        /* Todo list items */
+        .todo-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        .todo-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-md) var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-normal);
+        }
+        .todo-item.pinned {
+            border-color: var(--accent-glow);
+            background: rgba(124, 58, 237, 0.01);
+            box-shadow: 0 0 10px rgba(124, 58, 237, 0.05), var(--shadow-md);
+        }
+        .todo-item.completed {
+            opacity: 0.65;
+        }
+        .todo-checkbox-btn {
+            background: none;
+            border: none;
+            font-size: 1.35rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+        .todo-item.completed .todo-checkbox-btn {
+            color: var(--success-color);
+        }
+        .todo-details {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .todo-header-row {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        .todo-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: var(--font-size-base);
+        }
+        .todo-item.completed .todo-title {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+        .todo-desc {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        .todo-meta-row {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .priority-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--border-radius-pill);
+            text-transform: capitalize;
+        }
+        .priority-badge.badge-urgent { background: #FEE2E2; color: #EF4444; }
+        .priority-badge.badge-high { background: #FFEDD5; color: #F59E0B; }
+        .priority-badge.badge-medium { background: #E0E7FF; color: #6366F1; }
+        .priority-badge.badge-low { background: #DCFCE7; color: #16A34A; }
+
+        .due-badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .due-badge.overdue {
+            color: var(--error-color);
+            font-weight: 600;
+        }
+        .xp-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-orange);
+            padding: 2px 8px;
+            border-radius: var(--border-radius-pill);
+        }
+        .todo-tags-list {
+            display: flex;
+            gap: 4px;
+        }
+        .todo-tag {
+            font-size: 0.75rem;
+            color: var(--accent-glow);
+            font-weight: 500;
+        }
+        .todo-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        .action-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-placeholder);
+            padding: 6px;
+            border-radius: var(--border-radius-md);
+            transition: all 0.2s ease;
+        }
+        .action-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-dark);
+        }
+        .action-btn.pin-btn.active {
+            color: var(--accent-glow);
+        }
+        .action-btn.delete-btn:hover {
+            color: var(--error-color);
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-2xl) var(--spacing-xl);
+            color: var(--text-secondary);
+            text-align: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            margin: var(--spacing-md) 0;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--text-placeholder);
+            margin-bottom: var(--spacing-md);
+        }
+        .empty-state p {
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* Notes Panel */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-lg);
+        }
+        .note-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            height: 220px;
+            position: relative;
+        }
+        .note-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .dashed-add-card {
+            border: 2px dashed var(--border-color);
+            background: transparent !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            color: var(--text-secondary);
+        }
+        .dashed-add-card:hover {
+            border-color: var(--accent-glow);
+            color: var(--accent-glow);
+            background: rgba(124, 58, 237, 0.02) !important;
+        }
+        .dashed-add-card i {
+            font-size: 2.25rem;
+        }
+        .dashed-add-card span {
+            font-weight: 600;
+        }
+        .note-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-sm);
+        }
+        .note-card-title {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 85%;
+        }
+        .note-pin-icon {
+            font-size: 1.1rem;
+        }
+        .note-card-content {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            line-height: 1.5;
+            flex-grow: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4; line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+        .note-card-footer {
+            margin-top: var(--spacing-sm);
+            font-size: 0.75rem;
+            color: var(--text-placeholder);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Color Palette in Modals */
+        .color-picker-label {
+            display: block;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+        .color-palette {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+        .color-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform var(--transition-fast), border-color var(--transition-fast);
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.1), var(--shadow-sm);
+        }
+        .color-dot:hover {
+            transform: scale(1.1);
+        }
+        .color-dot.selected {
+            border-color: var(--accent-glow);
+            transform: scale(1.15);
+        }
+
+        /* Pomodoro Panel */
+        .pomodoro-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: var(--spacing-xl);
+            align-items: start;
+        }
+        .pomodoro-timer-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+        .timer-mode-tabs {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            background: var(--bg-dark);
+            padding: 4px;
+            border-radius: var(--border-radius-pill);
+            max-width: 320px;
+            margin: 0 auto var(--spacing-xl);
+        }
+        .timer-mode-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 16px;
+            border-radius: var(--border-radius-pill);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .timer-mode-btn.active {
+            background: var(--bg-card);
+            color: var(--accent-glow);
+            box-shadow: var(--shadow-sm);
+        }
+        .timer-display-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .progress-ring__bg {
+            stroke: var(--border-color);
+        }
+        .progress-ring__circle {
+            stroke: var(--accent-glow);
+            transition: stroke-dashoffset 0.1s linear, stroke var(--transition-normal);
+        }
+        .timer-time {
+            position: absolute;
+            font-size: 2.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+        }
+        .round-dots {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-md) 0 var(--spacing-lg);
+        }
+        .round-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border-color);
+            transition: background-color var(--transition-normal), transform var(--transition-normal);
+        }
+        .round-dot.completed {
+            background: var(--accent-glow);
+            transform: scale(1.2);
+        }
+        .timer-actions {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .timer-config-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+            text-align: left;
+            margin-top: var(--spacing-xl);
+            border-top: 1px solid var(--border-color);
+            padding-top: var(--spacing-lg);
+        }
+        .config-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-md);
+        }
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .config-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        .config-group input, .config-group select {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            font-family: inherit;
+            font-size: var(--font-size-sm);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            transition: border-color var(--transition-fast);
+        }
+        .config-group input:focus, .config-group select:focus {
+            outline: none;
+            border-color: var(--accent-glow);
+        }
+
+        /* Pomodoro stats & history panel */
+        .pomo-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        .pomo-stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-md);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .pomo-stat-val {
+            font-size: var(--font-size-xl);
+            font-weight: 800;
+            color: var(--accent-glow);
+        }
+        .pomo-stat-lbl {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .pomo-history-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+        }
+        .pomo-history-card h3 {
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: var(--spacing-sm);
+        }
+        .pomo-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .pomo-history-item {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pomo-hist-info h5 {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            margin: 0;
+        }
+        .pomo-hist-info p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        .pomo-hist-status {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--border-radius-pill);
+        }
+        .pomo-hist-status.completed {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success-color);
+        }
+        .pomo-hist-status.abandoned {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+        }
+
+        /* Goals Panel */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-lg);
+        }
+        .goal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .goal-title {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .goal-percentage {
+            font-weight: 700;
+            color: var(--accent-glow);
+            font-size: var(--font-size-lg);
+        }
+        .goal-progress-container {
+            height: 12px;
+            background-color: var(--border-color);
+            border-radius: var(--border-radius-pill);
+            overflow: hidden;
+            margin: var(--spacing-sm) 0;
+        }
+        .goal-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-glow) 0%, var(--accent-cyan) 100%);
+            border-radius: var(--border-radius-pill);
+            transition: width var(--transition-normal);
+        }
+        .goal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Custom Toast CSS Override */
+        #toast {
+            position: fixed;
+            bottom: var(--spacing-xl);
+            right: var(--spacing-xl);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-md) var(--spacing-lg);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            pointer-events: none;
+        }
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        #toast.success { border-left: 4px solid var(--success-color); }
+        #toast.error { border-left: 4px solid var(--error-color); }
+        #toast.info { border-left: 4px solid var(--accent-glow); }
+
+        /* Dialog/Modal Styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(30, 27, 46, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-header h3 {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color var(--transition-fast);
+        }
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+        .modal-body {
+            padding: var(--spacing-lg);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-dark);
+        }
+
+        /* Mobile responsiveness media queries */
+        @media (max-width: 992px) {
+            .pomodoro-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .todo-stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .notes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .goals-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-container {
+                flex-direction: column;
+                height: auto;
+                padding: var(--spacing-md) var(--spacing-xl);
+                gap: var(--spacing-sm);
+            }
+            .header-tabs {
+                width: 100%;
+                overflow-x: auto;
+                justify-content: flex-start;
+                padding-bottom: 4px;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+        @media (max-width: 480px) {
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="app-body">
+
+<aside style="width:240px;background:#1E1B4B;min-height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:200;">
+    <a href="home.html" style="padding:24px 20px 20px;display:flex;align-items:center;gap:10px;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:8px;">
+        <div style="width:36px;height:36px;background:#7C3AED;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:1rem;flex-shrink:0;"><i class="fas fa-graduation-cap"></i></div>
+        <span style="font-size:1.15rem;font-weight:800;color:white;">StudyFlow</span>
+    </a>
+    <div style="padding:4px 12px;display:flex;flex-direction:column;gap:2px;flex:1;">
+        <a href="home.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-home" style="width:18px;"></i> Home</a>
+        <a href="hub.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;background:#7C3AED;color:white;font-size:0.88rem;font-weight:600;"><i class="fas fa-th-large" style="width:18px;"></i> Hub</a>
+        <a href="notes.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-sticky-note" style="width:18px;"></i> Notes</a>
+        <a href="progress.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-chart-line" style="width:18px;"></i> Progress</a>
+        <a href="tasks.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-calendar-alt" style="width:18px;"></i> Task Scheduler</a>
+        <a href="profile.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#C4B5FD;font-size:0.88rem;font-weight:600;"><i class="fas fa-user" style="width:18px;"></i> Profile</a>
+    </div>
+    <div style="padding:12px;border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;">
+            <div id="sb-avatar" style="width:34px;height:34px;border-radius:50%;background:#7C3AED;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;">?</div>
+            <div><div id="sb-name" style="font-size:0.85rem;font-weight:700;color:white;">...</div><div style="font-size:0.72rem;color:#C4B5FD;">Student</div></div>
+        </div>
+        <button onclick="logoutUser()" style="width:100%;margin-top:8px;padding:9px 12px;background:#DC2626;color:white;border:none;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:0.82rem;cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center;">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+</aside>
+
+    <!-- Main Content Area -->
+    <main class="hub-main">
+
+        <div style="display:flex;gap:8px;margin-bottom:28px;border-bottom:2px solid #E5E7EB;padding-bottom:0;overflow-x:auto;">
+            <button class="hub-tab-btn active" data-panel="todos-tab" onclick="switchHubTab(this,'todos-tab')">
+                <i class="fas fa-tasks"></i> Tasks
+            </button>
+            <button class="hub-tab-btn" data-panel="notes-tab" onclick="switchHubTab(this,'notes-tab')">
+                <i class="fas fa-sticky-note"></i> Notes
+            </button>
+            <button class="hub-tab-btn" data-panel="pomodoro-tab" onclick="switchHubTab(this,'pomodoro-tab')">
+                <i class="fas fa-clock"></i> Pomodoro
+            </button>
+            <button class="hub-tab-btn" data-panel="goals-tab" onclick="switchHubTab(this,'goals-tab')">
+                <i class="fas fa-bullseye"></i> Goals
+            </button>
+            <button class="hub-tab-btn" data-panel="progress-tab" onclick="switchHubTab(this,'progress-tab')">
+                <i class="fas fa-chart-line"></i> Progress
+            </button>
+            <button class="hub-tab-btn" data-panel="scheduler-tab" onclick="switchHubTab(this,'scheduler-tab')">
+                <i class="fas fa-robot"></i> AI Planner
+            </button>
+        </div>
+
+        <!-- TODOS PANEL -->
+        <section id="todos-tab" class="tab-panel active">
+            <!-- Stats Bar -->
+            <div class="todo-stats-bar">
+                <div class="todo-stat-card pending">
+                    <div class="todo-stat-icon"><i class="fas fa-clock"></i></div>
+                    <div class="todo-stat-info">
+                        <span class="todo-stat-value" id="todo-stat-pending">0</span>
+                        <span class="todo-stat-label">Pending</span>
+                    </div>
+                </div>
+                <div class="todo-stat-card completed">
+                    <div class="todo-stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="todo-stat-info">
+                        <span class="todo-stat-value" id="todo-stat-completed">0</span>
+                        <span class="todo-stat-label">Completed</span>
+                    </div>
+                </div>
+                <div class="todo-stat-card due-today">
+                    <div class="todo-stat-icon"><i class="fas fa-calendar-day"></i></div>
+                    <div class="todo-stat-info">
+                        <span class="todo-stat-value" id="todo-stat-today">0</span>
+                        <span class="todo-stat-label">Due Today</span>
+                    </div>
+                </div>
+                <div class="todo-stat-card overdue">
+                    <div class="todo-stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="todo-stat-info">
+                        <span class="todo-stat-value" id="todo-stat-overdue">0</span>
+                        <span class="todo-stat-label">Overdue</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Row -->
+            <div class="todo-filters-row">
+                <div class="filter-btn-group">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="todo">To Do</button>
+                    <button class="filter-btn" data-filter="in_progress">In Progress</button>
+                    <button class="filter-btn" data-filter="done">Done</button>
+                    <button class="filter-btn" data-filter="urgent">Urgent</button>
+                    <button class="filter-btn" data-filter="today">Due Today</button>
+                </div>
+                <button class="btn btn-primary" onclick="openCreateTodoModal()">
+                    <i class="fas fa-plus"></i> New Task
+                </button>
+            </div>
+
+            <!-- Todos List -->
+            <div class="todo-list-container" id="todos-list-container">
+                <!-- Dynamically loaded -->
+            </div>
+        </section>
+
+        <!-- NOTES PANEL -->
+        <section id="notes-tab" class="tab-panel">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: var(--spacing-lg);">
+                <button class="btn btn-primary" onclick="openCreateNoteModal()">
+                    <i class="fas fa-plus"></i> Add Note
+                </button>
+            </div>
+            <div class="notes-grid" id="notes-grid-container">
+                <!-- Inline dashed card loaded dynamically alongside regular notes -->
+            </div>
+        </section>
+
+        <!-- POMODORO PANEL -->
+        <section id="pomodoro-tab" class="tab-panel">
+            <div class="pomodoro-grid">
+                <!-- Timer Card Left -->
+                <div class="pomodoro-timer-card">
+                    <div class="timer-mode-tabs">
+                        <button class="timer-mode-btn active" data-mode="focus">Focus</button>
+                        <button class="timer-mode-btn" data-mode="short_break">Short Break</button>
+                        <button class="timer-mode-btn" data-mode="long_break">Long Break</button>
+                    </div>
+
+                    <div class="timer-display-container">
+                        <svg class="progress-ring" width="200" height="200">
+                            <circle class="progress-ring__bg" stroke-width="8" fill="transparent" r="89" cx="100" cy="100" />
+                            <circle class="progress-ring__circle" stroke-width="8" fill="transparent" r="89" cx="100" cy="100" 
+                                    stroke-dasharray="559" stroke-dashoffset="0" stroke-linecap="round" />
+                        </svg>
+                        <span class="timer-time" id="timer-time-display">25:00</span>
+                    </div>
+
+                    <div class="round-dots" id="round-dots">
+                        <!-- Round indicator dots dynamically added -->
+                    </div>
+
+                    <div class="timer-actions">
+                        <button class="btn btn-primary btn-large" id="pomo-start-btn" onclick="toggleTimer()">
+                            <i class="fas fa-play"></i> Start
+                        </button>
+                        <button class="btn btn-secondary btn-large" id="pomo-reset-btn" onclick="resetTimer()">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+
+                    <!-- Config options inside Card -->
+                    <div class="timer-config-grid">
+                        <div class="config-group">
+                            <label for="pomo-subject">Session Subject</label>
+                            <input type="text" id="pomo-subject" value="Study Session" placeholder="e.g. Maths exercises">
+                        </div>
+                        <div class="config-group">
+                            <label for="pomo-task-select">Link to Task (optional)</label>
+                            <select id="pomo-task-select">
+                                <option value="">No task link</option>
+                            </select>
+                        </div>
+                        <div class="config-row">
+                            <div class="config-group">
+                                <label for="pomo-focus-mins">Focus (min)</label>
+                                <input type="number" id="pomo-focus-mins" value="25" min="1" max="120">
+                            </div>
+                            <div class="config-group">
+                                <label for="pomo-break-mins">Break (min)</label>
+                                <input type="number" id="pomo-break-mins" value="5" min="1" max="60">
+                            </div>
+                            <div class="config-group">
+                                <label for="pomo-rounds-num">Rounds</label>
+                                <input type="number" id="pomo-rounds-num" value="4" min="1" max="10">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats & History Right -->
+                <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                    <!-- 4 stat chips -->
+                    <div class="pomo-stats-grid">
+                        <div class="pomo-stat-card">
+                            <div class="pomo-stat-val" id="pomo-stat-sessions">0</div>
+                            <div class="pomo-stat-lbl">Sessions Done</div>
+                        </div>
+                        <div class="pomo-stat-card">
+                            <div class="pomo-stat-val" id="pomo-stat-rounds">0</div>
+                            <div class="pomo-stat-lbl">Rounds Finished</div>
+                        </div>
+                        <div class="pomo-stat-card">
+                            <div class="pomo-stat-val" id="pomo-stat-minutes">0m</div>
+                            <div class="pomo-stat-lbl">Minutes Focused</div>
+                        </div>
+                        <div class="pomo-stat-card">
+                            <div class="pomo-stat-val" id="pomo-stat-xp">0</div>
+                            <div class="pomo-stat-lbl">XP Earned</div>
+                        </div>
+                    </div>
+
+                    <!-- History card -->
+                    <div class="pomo-history-card">
+                        <h3><i class="fas fa-history"></i> Recent Sessions</h3>
+                        <div class="pomo-history-list" id="pomo-history-container">
+                            <!-- Dynamically loaded -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GOALS PANEL -->
+        <section id="goals-tab" class="tab-panel">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: var(--spacing-lg);">
+                <button class="btn btn-primary" onclick="openCreateGoalModal()">
+                    <i class="fas fa-plus"></i> Set Weekly Goal
+                </button>
+            </div>
+            <div class="goals-grid" id="goals-grid-container">
+                <!-- Goal cards dynamically loaded -->
+            </div>
+        </section>
+
+        <!-- PROGRESS PANEL -->
+        <section id="progress-tab" class="tab-panel">
+            <style>
+                .progress-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-md); margin-bottom: var(--spacing-xl); }
+                .kpi-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: var(--spacing-lg); box-shadow: var(--shadow-md); text-align: center; }
+                .kpi-val { font-size: 2rem; font-weight: 800; color: var(--accent-glow); line-height: 1.1; }
+                .kpi-lbl { font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 4px; font-weight: 500; }
+                .progress-charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-xl); margin-bottom: var(--spacing-xl); }
+                .chart-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: var(--spacing-xl); box-shadow: var(--shadow-md); }
+                .chart-card h3 { font-size: var(--font-size-lg); font-weight: 700; color: var(--text-primary); margin: 0 0 var(--spacing-lg); }
+                .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 160px; }
+                .bar-group { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 4px; height: 100%; justify-content: flex-end; }
+                .bar { width: 100%; border-radius: 6px 6px 0 0; min-height: 4px; transition: height 0.5s ease; }
+                .bar.tasks-bar { background: linear-gradient(180deg, #7C3AED, #6366F1); }
+                .bar.pomo-bar { background: linear-gradient(180deg, #F59E0B, #F97316); }
+                .bar-lbl { font-size: 0.7rem; color: var(--text-secondary); font-weight: 600; }
+                .bar-val { font-size: 0.7rem; color: var(--text-placeholder); }
+                .goals-progress-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: var(--spacing-xl); box-shadow: var(--shadow-md); }
+                .goals-progress-card h3 { font-size: var(--font-size-lg); font-weight: 700; color: var(--text-primary); margin: 0 0 var(--spacing-lg); }
+                @media (max-width: 768px) { .progress-kpi-grid { grid-template-columns: repeat(2, 1fr); } .progress-charts-row { grid-template-columns: 1fr; } }
+            </style>
+
+            <!-- KPI Cards -->
+            <div class="progress-kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="prog-xp">0</div>
+                    <div class="kpi-lbl">⭐ Total XP</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="prog-streak">0</div>
+                    <div class="kpi-lbl">🔥 Day Streak</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="prog-tasks-done">0</div>
+                    <div class="kpi-lbl">✅ Tasks Done</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="prog-pomo-mins">0m</div>
+                    <div class="kpi-lbl">⏱ Focus Time (week)</div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="progress-charts-row">
+                <div class="chart-card">
+                    <h3><i class="fas fa-check-double" style="color:var(--accent-glow);margin-right:8px;"></i>Tasks Completed (7 days)</h3>
+                    <div class="bar-chart" id="tasks-bar-chart"></div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-brain" style="color:var(--accent-orange);margin-right:8px;"></i>Study Minutes (7 days)</h3>
+                    <div class="bar-chart" id="pomo-bar-chart"></div>
+                </div>
+            </div>
+
+            <!-- Weekly Goals Progress -->
+            <div class="goals-progress-card" id="progress-goals-section">
+                <h3><i class="fas fa-bullseye" style="color:var(--accent-glow);margin-right:8px;"></i>Weekly Study Goals</h3>
+                <div id="progress-goals-list"></div>
+            </div>
+        </section>
+
+        <!-- TASK SCHEDULER PANEL -->
+        <section id="scheduler-tab" class="tab-panel">
+            <style>
+                .scheduler-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: var(--spacing-xl); align-items: start; }
+                .scheduler-form-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: var(--spacing-xl); box-shadow: var(--shadow-md); }
+                .scheduler-form-card h2 { font-size: var(--font-size-xl); font-weight: 800; color: var(--text-primary); margin: 0 0 4px; }
+                .scheduler-form-card p.sub { font-size: var(--font-size-sm); color: var(--text-secondary); margin: 0 0 var(--spacing-lg); }
+                .scheduler-results-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: var(--spacing-xl); box-shadow: var(--shadow-md); }
+                .scheduler-results-card h3 { font-size: var(--font-size-lg); font-weight: 700; color: var(--text-primary); margin: 0 0 var(--spacing-lg); }
+                .plan-task-item { background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-sm); }
+                .plan-task-icon { width: 40px; height: 40px; border-radius: var(--border-radius-md); background: rgba(124,58,237,0.1); color: var(--accent-glow); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+                .plan-task-info { flex-grow: 1; }
+                .plan-task-title { font-weight: 700; color: var(--text-primary); font-size: var(--font-size-sm); }
+                .plan-task-meta { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; }
+                .plan-empty { text-align: center; color: var(--text-secondary); padding: var(--spacing-xl) 0; }
+                .plan-empty i { font-size: 2.5rem; color: var(--text-placeholder); display: block; margin-bottom: var(--spacing-md); }
+                .subjects-tag-input { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); background: var(--bg-dark); min-height: 42px; cursor: text; }
+                .subject-tag { background: rgba(124,58,237,0.15); color: var(--accent-glow); border-radius: var(--border-radius-pill); padding: 2px 10px; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+                .subject-tag button { background: none; border: none; cursor: pointer; color: var(--accent-glow); padding: 0; font-size: 0.8rem; line-height: 1; }
+                .subjects-tag-input input { border: none; background: transparent; outline: none; font-family: inherit; font-size: var(--font-size-sm); color: var(--text-primary); flex: 1; min-width: 120px; }
+                @media (max-width: 900px) { .scheduler-grid { grid-template-columns: 1fr; } }
+            </style>
+
+            <div class="scheduler-grid">
+                <div class="scheduler-form-card">
+                    <h2>🤖 AI Daily Planner</h2>
+                    <p class="sub">Tell the AI how much time you have and it will build a study plan & create tasks for you.</p>
+
+                    <div class="form-group">
+                        <label for="sched-minutes">Available time today (minutes)</label>
+                        <input type="number" id="sched-minutes" value="60" min="15" max="480" placeholder="e.g. 90">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Subjects to cover</label>
+                        <div class="subjects-tag-input" id="subjects-tag-input" onclick="document.getElementById('subject-tag-raw').focus()">
+                            <input type="text" id="subject-tag-raw" placeholder="Type subject & press Enter..." onkeydown="handleSubjectTagInput(event)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sched-priority">Priority subject (optional)</label>
+                        <input type="text" id="sched-priority" placeholder="e.g. Mathematics">
+                    </div>
+
+                    <button class="btn btn-primary" style="width:100%;" onclick="runAIPlanner()" id="run-planner-btn">
+                        <i class="fas fa-magic"></i> Generate Study Plan
+                    </button>
+                </div>
+
+                <div class="scheduler-results-card">
+                    <h3><i class="fas fa-list-alt"></i> Generated Plan</h3>
+                    <div id="planner-results">
+                        <div class="plan-empty">
+                            <i class="fas fa-robot"></i>
+                            Fill in your details and click <strong>Generate Study Plan</strong> to get started.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+
+    <!-- TODO CREATE/EDIT MODAL -->
+    <div id="todo-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="todo-modal-title">New Task</h3>
+                <button class="modal-close" onclick="closeModal('todo-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="todo-form" onsubmit="saveTodo(event)">
+                    <input type="hidden" id="todo-form-id">
+                    <div class="form-group">
+                        <label for="todo-title">Task Title *</label>
+                        <input type="text" id="todo-title" required placeholder="e.g. Solve physics problems">
+                    </div>
+                    <div class="form-group">
+                        <label for="todo-description">Description</label>
+                        <textarea id="todo-description" rows="3" placeholder="Optional details..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="todo-priority">Priority</label>
+                        <select id="todo-priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="todo-due-date">Due Date</label>
+                        <input type="date" id="todo-due-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="todo-tags">Tags (comma-separated)</label>
+                        <input type="text" id="todo-tags" placeholder="e.g. homework, physics">
+                    </div>
+                    <div class="form-group">
+                        <label for="todo-xp">XP Reward</label>
+                        <input type="number" id="todo-xp" value="10" min="1">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('todo-modal')">Cancel</button>
+                <button class="btn btn-primary" type="submit" form="todo-form">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTE CREATE/EDIT MODAL -->
+    <div id="note-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="note-modal-title">New Note</h3>
+                <button class="modal-close" onclick="closeModal('note-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="note-form" onsubmit="saveNote(event)">
+                    <input type="hidden" id="note-form-id">
+                    <div class="form-group">
+                        <label for="note-title">Title</label>
+                        <input type="text" id="note-title" value="Untitled Note" placeholder="Note title...">
+                    </div>
+                    <div class="form-group">
+                        <label for="note-content">Content</label>
+                        <textarea id="note-content" rows="6" placeholder="Start writing here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="note-tags">Tags (comma-separated)</label>
+                        <input type="text" id="note-tags" placeholder="e.g. science, notes">
+                    </div>
+                    
+                    <label class="color-picker-label">Card Color</label>
+                    <div class="color-palette" id="note-color-palette">
+                        <div class="color-dot selected" data-color="#FAFAFE" style="background-color: #FAFAFE;"></div>
+                        <div class="color-dot" data-color="#FEF3C7" style="background-color: #FEF3C7;"></div>
+                        <div class="color-dot" data-color="#DCFCE7" style="background-color: #DCFCE7;"></div>
+                        <div class="color-dot" data-color="#DBEAFE" style="background-color: #DBEAFE;"></div>
+                        <div class="color-dot" data-color="#FCE7F3" style="background-color: #FCE7F3;"></div>
+                        <div class="color-dot" data-color="#EDE9FE" style="background-color: #EDE9FE;"></div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: var(--spacing-md);">
+                        <input type="checkbox" id="note-pinned" style="cursor: pointer; width: 18px; height: 18px;">
+                        <label for="note-pinned" style="cursor: pointer; font-weight: 600; margin: 0;">Pin to top 📌</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button class="btn btn-outline-v5" id="note-delete-btn" style="color: var(--error-color); border-color: var(--error-color);" onclick="deleteNoteTrigger()">Delete</button>
+                <div style="display: flex; gap: var(--spacing-sm);">
+                    <button class="btn btn-secondary" onclick="closeModal('note-modal')">Cancel</button>
+                    <button class="btn btn-primary" type="submit" form="note-form">Save Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GOAL CREATE MODAL -->
+    <div id="goal-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Set Weekly Study Goal</h3>
+                <button class="modal-close" onclick="closeModal('goal-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="goal-form" onsubmit="saveGoal(event)">
+                    <div class="form-group">
+                        <label for="goal-title">Goal Title *</label>
+                        <input type="text" id="goal-title" required placeholder="e.g. Weekly Math Target">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal-target">Target Minutes *</label>
+                        <input type="number" id="goal-target" required value="120" min="5" placeholder="e.g. 120 (which is 2 hours)">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('goal-modal')">Cancel</button>
+                <button class="btn btn-primary" type="submit" form="goal-form">Set Goal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Feedback -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script>
+        // Define API base url
+        const API_BASE = 'http://localhost:8000';
+
+        // Check authentication and get JWT token from localStorage (supporting both variants)
+        function getToken() {
+            return localStorage.getItem('studyflowToken') || localStorage.getItem('studyflow_token');
+        }
+
+        // Standard API headers
+        function getHeaders() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = 'auth.html';
+                return {};
+            }
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('studyflowToken');
+            localStorage.removeItem('studyflow_token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('sf_onboarding');
+            window.location.href = 'auth.html';
+        }
+
+        // Generic API fetch wrapper
+        async function apiRequest(endpoint, options = {}) {
+            const url = `${API_BASE}${endpoint}`;
+            options.headers = {
+                ...getHeaders(),
+                ...options.headers
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (response.status === 401) {
+                    localStorage.removeItem('studyflowToken');
+                    localStorage.removeItem('studyflow_token');
+                    localStorage.removeItem('username');
+                    window.location.href = 'auth.html';
+                    return null;
+                }
+                if (response.status === 204) {
+                    return true;
+                }
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.detail || `API error: ${response.status}`);
+                }
+                return await response.json();
+            } catch (err) {
+                console.error(`Request to ${endpoint} failed:`, err);
+                showToast(err.message || 'Request failed', 'error');
+                throw err;
+            }
+        }
+
+        // HTML escaping function for XSS protection
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        // Custom Toast Toast Notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+
+            toast.className = 'toast show ' + type;
+            
+            let icon = '<i class="fas fa-check-circle" style="color: var(--success-color);"></i>';
+            if (type === 'error') {
+                icon = '<i class="fas fa-exclamation-circle" style="color: var(--error-color);"></i>';
+            } else if (type === 'info') {
+                icon = '<i class="fas fa-info-circle" style="color: var(--accent-glow);"></i>';
+            }
+            
+            toast.innerHTML = `${icon} <span style="font-weight:600;">${escapeHTML(message)}</span>`;
+
+            if (window.toastTimeout) clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // Modal triggers
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Close modals on clicking overlay background
+        document.querySelectorAll('.modal').forEach(m => {
+            m.addEventListener('click', (e) => {
+                if (e.target === m) {
+                    closeModal(m.id);
+                }
+            });
+        });
+
+        // Relative Date formatting
+        function formatRelativeDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHr = Math.floor(diffMin / 60);
+            const diffDays = Math.floor(diffHr / 24);
+            
+            if (diffSec < 60) return 'Just now';
+            if (diffMin < 60) return `${diffMin}m ago`;
+            if (diffHr < 24) return `${diffHr}h ago`;
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        // Initialize user display & startup checks
+        document.addEventListener('DOMContentLoaded', async () => {
+            // const token = getToken();
+            // if (!token) {
+            //     window.location.href = 'auth.html';
+            //     return;
+            // }
+            const sbName = localStorage.getItem('username') || '?';
+            const sbAv = document.getElementById('sb-avatar');
+            const sbNm = document.getElementById('sb-name');
+            if(sbAv) sbAv.textContent = sbName[0].toUpperCase();
+            if(sbNm) sbNm.textContent = sbName;
+
+            const token = getToken();
+            if (!token) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            try {
+                const user = await apiRequest('/users/me');
+                if (user && user.username) {
+                    localStorage.setItem('username', user.username);
+                }
+            } catch (err) {
+                console.error("Failed to load user profile on startup", err);
+            }
+
+            // Wire Note Card color dots
+            document.querySelectorAll('#note-color-palette .color-dot').forEach(dot => {
+                dot.addEventListener('click', () => {
+                    document.querySelectorAll('#note-color-palette .color-dot').forEach(d => d.classList.remove('selected'));
+                    dot.classList.add('selected');
+                });
+            });
+
+            // Wire Pomodoro Timer Mode Buttons
+            document.querySelectorAll('.timer-mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (timerInterval) {
+                        showToast("Please pause or reset the timer before changing modes.", "info");
+                        return;
+                    }
+                    document.querySelectorAll('.timer-mode-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    switchTimerMode(btn.getAttribute('data-mode'));
+                });
+            });
+
+            // Initialize with todos panel
+            loadTodos();
+        });
+
+
+        // ============================================================
+        // MODULE 1: TODOS (TASKS)
+        // ============================================================
+        let allTodos = [];
+        let currentTodoFilter = 'all';
+
+        async function loadTodos() {
+            try {
+                // Concurrently load todos and their stats
+                const [todos, stats] = await Promise.all([
+                    apiRequest('/todos'),
+                    apiRequest('/todos/stats')
+                ]);
+
+                allTodos = todos || [];
+                updateTodoStatsUI(stats);
+                renderTodoList();
+            } catch (err) {
+                console.error("Failed to load todos", err);
+            }
+        }
+
+        function updateTodoStatsUI(stats) {
+            if (!stats) return;
+            document.getElementById('todo-stat-pending').textContent = stats.pending || 0;
+            document.getElementById('todo-stat-completed').textContent = stats.completed || 0;
+            document.getElementById('todo-stat-today').textContent = stats.due_today || 0;
+            document.getElementById('todo-stat-overdue').textContent = stats.overdue || 0;
+        }
+
+        // Filter handlers
+        document.querySelectorAll('.filter-btn-group .filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn-group .filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTodoFilter = btn.getAttribute('data-filter');
+                renderTodoList();
+            });
+        });
+
+        function renderTodoList() {
+            const container = document.getElementById('todos-list-container');
+            container.innerHTML = '';
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            
+            // Filter list client-side
+            const filtered = allTodos.filter(todo => {
+                if (currentTodoFilter === 'all') return true;
+                if (currentTodoFilter === 'todo') return todo.status !== 'done';
+                if (currentTodoFilter === 'in_progress') return todo.status === 'in_progress';
+                if (currentTodoFilter === 'done') return todo.status === 'done';
+                if (currentTodoFilter === 'urgent') return todo.priority === 'urgent';
+                if (currentTodoFilter === 'today') return todo.due_date === todayStr && todo.status !== 'done';
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-tasks"></i>
+                        <p>No tasks found matching this filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(todo => {
+                const isCompleted = todo.status === 'done';
+                const isPinned = todo.is_pinned;
+                
+                // Determine overdue state
+                let isOverdue = false;
+                if (todo.due_date && todo.status !== 'done') {
+                    const today = new Date();
+                    today.setHours(0,0,0,0);
+                    const due = new Date(todo.due_date);
+                    due.setHours(0,0,0,0);
+                    isOverdue = due < today;
+                }
+
+                let priorityClass = 'badge-medium';
+                if (todo.priority === 'urgent') priorityClass = 'badge-urgent';
+                else if (todo.priority === 'high') priorityClass = 'badge-high';
+                else if (todo.priority === 'low') priorityClass = 'badge-low';
+
+                const tagsHTML = (todo.tags || []).map(t => `<span class="todo-tag">#${escapeHTML(t)}</span>`).join(' ');
+
+                const itemHTML = `
+                    <div class="todo-item ${isCompleted ? 'completed' : ''} ${isPinned ? 'pinned' : ''}" data-id="${todo.id}">
+                        <button class="todo-checkbox-btn" onclick="toggleTodoStatus(${todo.id}, '${todo.status}')" title="Mark as ${isCompleted ? 'Pending' : 'Done'}">
+                            <i class="${isCompleted ? 'fas fa-check-circle' : 'far fa-circle'}"></i>
+                        </button>
+                        <div class="todo-details">
+                            <div class="todo-header-row">
+                                <span class="todo-title">${escapeHTML(todo.title)}</span>
+                                <span class="priority-badge ${priorityClass}">${escapeHTML(todo.priority)}</span>
+                            </div>
+                            ${todo.description ? `<p class="todo-desc">${escapeHTML(todo.description)}</p>` : ''}
+                            <div class="todo-meta-row">
+                                ${todo.due_date ? `
+                                    <span class="due-badge ${isOverdue ? 'overdue' : ''}">
+                                        <i class="${isOverdue ? 'fas fa-exclamation-triangle' : 'far fa-calendar'}"></i>
+                                        Due ${todo.due_date}
+                                    </span>` : ''}
+                                <span class="xp-badge">+${todo.xp_reward} XP</span>
+                                <div class="todo-tags-list">${tagsHTML}</div>
+                            </div>
+                        </div>
+                        <div class="todo-actions">
+                            <button class="action-btn pin-btn ${isPinned ? 'active' : ''}" onclick="toggleTodoPin(${todo.id}, ${isPinned})" title="${isPinned ? 'Unpin task' : 'Pin task'}">
+                                <i class="fas fa-thumbtack"></i>
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteTodoTrigger(${todo.id})" title="Delete task">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', itemHTML);
+            });
+        }
+
+        function openCreateTodoModal() {
+            document.getElementById('todo-form').reset();
+            document.getElementById('todo-form-id').value = '';
+            document.getElementById('todo-modal-title').textContent = 'New Task';
+            openModal('todo-modal');
+        }
+
+        async function saveTodo(event) {
+            event.preventDefault();
+            const id = document.getElementById('todo-form-id').value;
+            const title = document.getElementById('todo-title').value;
+            const description = document.getElementById('todo-description').value;
+            const priority = document.getElementById('todo-priority').value;
+            const due_date = document.getElementById('todo-due-date').value || null;
+            const tagsRaw = document.getElementById('todo-tags').value;
+            const xp_reward = parseInt(document.getElementById('todo-xp').value) || 10;
+
+            const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(t => t.length > 0) : [];
+
+            const payload = { title, description, priority, due_date, tags, xp_reward };
+
+            try {
+                if (id) {
+                    await apiRequest(`/todos/${id}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify(payload)
+                    });
+                    showToast('Task updated successfully.');
+                } else {
+                    await apiRequest('/todos', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    showToast('Task created successfully.');
+                }
+                closeModal('todo-modal');
+                loadTodos();
+            } catch (err) {
+                console.error("Failed to save todo", err);
+            }
+        }
+
+        async function toggleTodoStatus(id, currentStatus) {
+            const newStatus = currentStatus === 'done' ? 'todo' : 'done';
+            try {
+                const updated = await apiRequest(`/todos/${id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                if (newStatus === 'done') {
+                    showToast(`Task completed! +${updated.xp_reward || 10} XP earned! 🚀`, 'success');
+                } else {
+                    showToast('Task marked as active.');
+                }
+                loadTodos();
+            } catch (err) {
+                console.error("Failed to toggle todo status", err);
+            }
+        }
+
+        async function toggleTodoPin(id, isCurrentlyPinned) {
+            try {
+                await apiRequest(`/todos/${id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ is_pinned: !isCurrentlyPinned })
+                });
+                showToast(isCurrentlyPinned ? 'Task unpinned.' : 'Task pinned to top.');
+                loadTodos();
+            } catch (err) {
+                console.error("Failed to pin/unpin todo", err);
+            }
+        }
+
+        async function deleteTodoTrigger(id) {
+            if (!confirm('Are you sure you want to delete this task?')) return;
+            try {
+                await apiRequest(`/todos/${id}`, { method: 'DELETE' });
+                showToast('Task deleted.');
+                loadTodos();
+            } catch (err) {
+                console.error("Failed to delete todo", err);
+            }
+        }
+
+
+        // ============================================================
+        // MODULE 2: NOTES
+        // ============================================================
+        let allNotes = [];
+        let currentEditingNoteId = null;
+
+        async function loadNotes() {
+            try {
+                allNotes = await apiRequest('/notes') || [];
+                renderNotesGrid();
+            } catch (err) {
+                console.error("Failed to load notes", err);
+            }
+        }
+
+        function renderNotesGrid() {
+            const container = document.getElementById('notes-grid-container');
+            container.innerHTML = '';
+
+            // Add the inline dashed add card at the beginning
+            const addCardHTML = `
+                <div class="note-card dashed-add-card" onclick="openCreateNoteModal()">
+                    <i class="fas fa-plus"></i>
+                    <span>Add New Note</span>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', addCardHTML);
+
+            if (allNotes.length === 0) {
+                return; // Grid just has the empty/add card
+            }
+
+            allNotes.forEach(note => {
+                const style = note.color ? `background-color: ${note.color};` : '';
+                const isPinned = note.is_pinned;
+
+                const noteHTML = `
+                    <div class="note-card" style="${style}" onclick="openEditNoteModal(${note.id})">
+                        <div class="note-card-header">
+                            <h4 class="note-card-title">${escapeHTML(note.title || 'Untitled Note')}</h4>
+                            ${isPinned ? '<span class="note-pin-icon" title="Pinned note">📌</span>' : ''}
+                        </div>
+                        <div class="note-card-content">
+                            ${escapeHTML(note.content || 'No content')}
+                        </div>
+                        <div class="note-card-footer">
+                            <span class="note-date">${formatRelativeDate(note.updated_at)}</span>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', noteHTML);
+            });
+        }
+
+        function openCreateNoteModal() {
+            currentEditingNoteId = null;
+            document.getElementById('note-form').reset();
+            document.getElementById('note-form-id').value = '';
+            document.getElementById('note-modal-title').textContent = 'New Note';
+            document.getElementById('note-delete-btn').style.display = 'none';
+            
+            // Set default color select
+            document.querySelectorAll('#note-color-palette .color-dot').forEach(dot => {
+                dot.classList.remove('selected');
+                if (dot.getAttribute('data-color') === '#FAFAFE') dot.classList.add('selected');
+            });
+
+            openModal('note-modal');
+        }
+
+        function openEditNoteModal(id) {
+            currentEditingNoteId = id;
+            const note = allNotes.find(n => n.id === id);
+            if (!note) return;
+
+            document.getElementById('note-form-id').value = note.id;
+            document.getElementById('note-title').value = note.title;
+            document.getElementById('note-content').value = note.content || '';
+            document.getElementById('note-tags').value = (note.tags || []).join(', ');
+            document.getElementById('note-pinned').checked = note.is_pinned || false;
+            document.getElementById('note-modal-title').textContent = 'Edit Note';
+            document.getElementById('note-delete-btn').style.display = 'block';
+
+            // Select color dot
+            document.querySelectorAll('#note-color-palette .color-dot').forEach(dot => {
+                dot.classList.remove('selected');
+                if (dot.getAttribute('data-color') === (note.color || '#FAFAFE')) {
+                    dot.classList.add('selected');
+                }
+            });
+
+            openModal('note-modal');
+        }
+
+        async function saveNote(event) {
+            event.preventDefault();
+            const id = document.getElementById('note-form-id').value;
+            const title = document.getElementById('note-title').value || 'Untitled Note';
+            const content = document.getElementById('note-content').value;
+            const tagsRaw = document.getElementById('note-tags').value;
+            const is_pinned = document.getElementById('note-pinned').checked;
+            
+            const selectedColorDot = document.querySelector('#note-color-palette .color-dot.selected');
+            const color = selectedColorDot ? selectedColorDot.getAttribute('data-color') : '#FAFAFE';
+
+            const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(t => t.length > 0) : [];
+
+            const payload = { title, content, color, tags, is_pinned };
+
+            try {
+                if (id) {
+                    await apiRequest(`/notes/${id}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify(payload)
+                    });
+                    showToast('Note updated.');
+                } else {
+                    await apiRequest('/notes', {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    showToast('Note created.');
+                }
+                closeModal('note-modal');
+                loadNotes();
+            } catch (err) {
+                console.error("Failed to save note", err);
+            }
+        }
+
+        async function deleteNoteTrigger() {
+            if (!currentEditingNoteId) return;
+            if (!confirm('Are you sure you want to delete this note?')) return;
+            try {
+                await apiRequest(`/notes/${currentEditingNoteId}`, { method: 'DELETE' });
+                showToast('Note deleted.');
+                closeModal('note-modal');
+                loadNotes();
+            } catch (err) {
+                console.error("Failed to delete note", err);
+            }
+        }
+
+
+        // ============================================================
+        // MODULE 3: POMODORO TIMER
+        // ============================================================
+        let timerInterval = null;
+        let pomoSessionId = null;
+        let secondsLeft = 25 * 60;
+        let totalSeconds = 25 * 60;
+        let timerMode = 'focus'; // 'focus', 'short_break', 'long_break'
+        let currentCompletedRounds = 0;
+        let audioCtx = null;
+
+        // Initialize / Resume web audio context on user interaction
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Web Audio API chime generator
+        function playChime() {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.type = 'sine';
+                // pleasant dual chime
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+                
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            } catch (e) {
+                console.warn("Could not play audio chime:", e);
+            }
+        }
+
+        async function loadPomodoroTab() {
+            try {
+                // Populate task linking selector
+                const todos = await apiRequest('/todos') || [];
+                const select = document.getElementById('pomo-task-select');
+                select.innerHTML = '<option value="">No task link</option>';
+                todos.filter(t => t.status !== 'done').forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = t.title;
+                    select.appendChild(opt);
+                });
+
+                // Load Stats & History
+                const summary = await apiRequest('/hub/summary');
+                const history = await apiRequest('/pomodoro/history');
+                
+                updatePomoStatsUI(summary ? summary.pomodoro_stats : null);
+                renderPomoHistory(history);
+                
+                // Initialize default dots
+                renderPomoDots();
+            } catch (err) {
+                console.error("Failed to load Pomodoro tab details", err);
+            }
+        }
+
+        function updatePomoStatsUI(stats) {
+            if (!stats) return;
+            document.getElementById('pomo-stat-sessions').textContent = stats.sessions_this_week || 0;
+            document.getElementById('pomo-stat-rounds').textContent = stats.rounds_this_week || 0;
+            document.getElementById('pomo-stat-minutes').textContent = (stats.minutes_this_week || 0) + 'm';
+            document.getElementById('pomo-stat-xp').textContent = (stats.rounds_this_week || 0) * 15;
+        }
+
+        function renderPomoHistory(history) {
+            const container = document.getElementById('pomo-history-container');
+            container.innerHTML = '';
+
+            if (!history || history.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: var(--text-secondary); padding: var(--spacing-lg) 0;">
+                        No history sessions this week.
+                    </div>
+                `;
+                return;
+            }
+
+            history.forEach(session => {
+                const date = new Date(session.started_at).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+                const title = session.task_title ? `${escapeHTML(session.subject)} (${escapeHTML(session.task_title)})` : escapeHTML(session.subject || 'Focus session');
+                const duration = session.duration_minutes * session.completed_rounds;
+
+                const itemHTML = `
+                    <div class="pomo-history-item">
+                        <div class="pomo-hist-info">
+                            <h5>${title}</h5>
+                            <p>${date} • Finished ${session.completed_rounds}/${session.total_rounds} rounds (${duration}m)</p>
+                        </div>
+                        <span class="pomo-hist-status ${session.status}">${escapeHTML(session.status)}</span>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', itemHTML);
+            });
+        }
+
+        function switchTimerMode(mode) {
+            timerMode = mode;
+            const focusVal = parseInt(document.getElementById('pomo-focus-mins').value) || 25;
+            const breakVal = parseInt(document.getElementById('pomo-break-mins').value) || 5;
+
+            if (mode === 'focus') {
+                totalSeconds = focusVal * 60;
+            } else if (mode === 'short_break') {
+                totalSeconds = breakVal * 60;
+            } else if (mode === 'long_break') {
+                totalSeconds = 15 * 60; // Standard 15 mins
+            }
+
+            secondsLeft = totalSeconds;
+            updateTimerDisplay();
+            renderPomoDots();
+
+            // Style progress ring color based on mode
+            const ringCircle = document.querySelector('.progress-ring__circle');
+            if (mode === 'focus') {
+                ringCircle.style.stroke = 'var(--accent-glow)';
+            } else if (mode === 'short_break') {
+                ringCircle.style.stroke = 'var(--success-color)';
+            } else {
+                ringCircle.style.stroke = 'var(--accent-cyan)';
+            }
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(secondsLeft / 60);
+            const secs = secondsLeft % 60;
+            document.getElementById('timer-time-display').textContent = 
+                `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+            // Calculate SVG stroke offset
+            const ringCircle = document.querySelector('.progress-ring__circle');
+            const circumference = 559;
+            const percent = (secondsLeft / totalSeconds) * 100;
+            const offset = circumference - (percent / 100) * circumference;
+            ringCircle.style.strokeDashoffset = offset;
+        }
+
+        function renderPomoDots() {
+            const container = document.getElementById('round-dots');
+            container.innerHTML = '';
+            const rounds = parseInt(document.getElementById('pomo-rounds-num').value) || 4;
+            for (let i = 0; i < rounds; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'round-dot' + (i < currentCompletedRounds ? ' completed' : '');
+                container.appendChild(dot);
+            }
+        }
+
+        // Toggle inputs availability
+        function toggleTimerConfigInputs(disabled) {
+            document.getElementById('pomo-subject').disabled = disabled;
+            document.getElementById('pomo-task-select').disabled = disabled;
+            document.getElementById('pomo-focus-mins').disabled = disabled;
+            document.getElementById('pomo-break-mins').disabled = disabled;
+            document.getElementById('pomo-rounds-num').disabled = disabled;
+        }
+
+        async function toggleTimer() {
+            initAudio();
+
+            const startBtn = document.getElementById('pomo-start-btn');
+
+            if (timerInterval) {
+                // Pause timer
+                clearInterval(timerInterval);
+                timerInterval = null;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Start';
+                showToast("Timer paused.");
+            } else {
+                // Start / Resume timer
+                if (!pomoSessionId && timerMode === 'focus') {
+                    // Create a new session in backend DB
+                    const subject = document.getElementById('pomo-subject').value || 'Study Session';
+                    const focusMins = parseInt(document.getElementById('pomo-focus-mins').value) || 25;
+                    const breakMins = parseInt(document.getElementById('pomo-break-mins').value) || 5;
+                    const roundsTotal = parseInt(document.getElementById('pomo-rounds-num').value) || 4;
+                    const linkedTaskId = document.getElementById('pomo-task-select').value || null;
+
+                    try {
+                        const session = await apiRequest('/pomodoro', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                subject,
+                                duration_minutes: focusMins,
+                                break_minutes: breakMins,
+                                total_rounds: roundsTotal,
+                                todo_id: linkedTaskId ? parseInt(linkedTaskId) : null
+                            })
+                        });
+                        if (session) {
+                            pomoSessionId = session.id;
+                            currentCompletedRounds = 0;
+                            toggleTimerConfigInputs(true);
+                            renderPomoDots();
+                        }
+                    } catch (err) {
+                        console.error("Failed to create Pomodoro session in backend", err);
+                        return;
+                    }
+                }
+
+                startBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                timerInterval = setInterval(timerTick, 1000);
+            }
+        }
+
+        async function timerTick() {
+            if (secondsLeft > 0) {
+                secondsLeft--;
+                updateTimerDisplay();
+            } else {
+                // Timer finished!
+                clearInterval(timerInterval);
+                timerInterval = null;
+                playChime();
+
+                if (timerMode === 'focus') {
+                    currentCompletedRounds++;
+                    renderPomoDots();
+                    
+                    const roundsTotal = parseInt(document.getElementById('pomo-rounds-num').value) || 4;
+
+                    if (currentCompletedRounds >= roundsTotal) {
+                        // Entire session completed
+                        showToast(`Pomodoro Finished! You completed all ${roundsTotal} rounds! 🏆`, 'success');
+                        await finishPomodoroSession('completed');
+                    } else {
+                        // Switch to break mode
+                        showToast("Focus round finished! Switch to Short Break.", "info");
+                        switchTimerMode('short_break');
+                        // Auto-start break
+                        toggleTimer();
+                    }
+                } else {
+                    // Break finished, switch back to focus
+                    showToast("Break over! Ready for the next focus round?", "info");
+                    switchTimerMode('focus');
+                    // Auto-start focus
+                    toggleTimer();
+                }
+            }
+        }
+
+        async function finishPomodoroSession(status) {
+            if (!pomoSessionId) return;
+
+            try {
+                await apiRequest(`/pomodoro/${pomoSessionId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        completed_rounds: currentCompletedRounds,
+                        status: status
+                    })
+                });
+                
+                if (status === 'completed') {
+                    showToast(`Session successfully finalized! Earned ${currentCompletedRounds * 15} XP! 🎉`, 'success');
+                } else {
+                    showToast('Session marked as abandoned.');
+                }
+            } catch (err) {
+                console.error("Failed to finalize Pomodoro session", err);
+            } finally {
+                // Clear session stats
+                pomoSessionId = null;
+                currentCompletedRounds = 0;
+                toggleTimerConfigInputs(false);
+                switchTimerMode('focus');
+                loadPomodoroTab(); // Reload history
+            }
+        }
+
+        async function resetTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+
+            if (pomoSessionId && confirm("Abandon current Pomodoro session? Progress will be saved.")) {
+                await finishPomodoroSession('abandoned');
+            } else {
+                pomoSessionId = null;
+                currentCompletedRounds = 0;
+                toggleTimerConfigInputs(false);
+                switchTimerMode('focus');
+                renderPomoDots();
+            }
+
+            document.getElementById('pomo-start-btn').innerHTML = '<i class="fas fa-play"></i> Start';
+            showToast("Timer reset.");
+        }
+
+
+        // ============================================================
+        // MODULE 4: WEEKLY GOALS
+        // ============================================================
+        let allGoals = [];
+
+        async function loadGoals() {
+            try {
+                allGoals = await apiRequest('/goals') || [];
+                renderGoalsGrid();
+            } catch (err) {
+                console.error("Failed to load goals", err);
+            }
+        }
+
+        function renderGoalsGrid() {
+            const container = document.getElementById('goals-grid-container');
+            container.innerHTML = '';
+
+            if (allGoals.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <i class="fas fa-bullseye"></i>
+                        <p>No active study goals set for this week. Click "Set Weekly Goal" to start tracking!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            allGoals.forEach(goal => {
+                const percent = Math.min(Math.round((goal.current_minutes / goal.target_minutes) * 100), 100) || 0;
+                const curHrs = (goal.current_minutes / 60).toFixed(1);
+                const targetHrs = (goal.target_minutes / 60).toFixed(1);
+
+                const cardHTML = `
+                    <div class="goal-card card-v5">
+                        <div class="goal-header">
+                            <h4 class="goal-title">${escapeHTML(goal.title)}</h4>
+                            <span class="goal-percentage">${percent}%</span>
+                        </div>
+                        <div class="goal-progress-container">
+                            <div class="goal-progress-bar" style="width: ${percent}%;"></div>
+                        </div>
+                        <div class="goal-footer">
+                            <span class="goal-hours">${curHrs}h / ${targetHrs}h this week</span>
+                            <div style="display: flex; gap: var(--spacing-sm);">
+                                <button class="action-btn" onclick="adjustGoalProgress(${goal.id}, 15)" title="Add 15 minutes"><i class="fas fa-plus"></i> 15m</button>
+                                <button class="action-btn" onclick="deactivateGoal(${goal.id})" title="Delete weekly goal"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+        function openCreateGoalModal() {
+            document.getElementById('goal-form').reset();
+            openModal('goal-modal');
+        }
+
+        async function saveGoal(event) {
+            event.preventDefault();
+            const title = document.getElementById('goal-title').value;
+            const target_minutes = parseInt(document.getElementById('goal-target').value) || 120;
+
+            try {
+                await apiRequest('/goals', {
+                    method: 'POST',
+                    body: JSON.stringify({ title, target_minutes })
+                });
+                showToast('Weekly goal added!');
+                closeModal('goal-modal');
+                loadGoals();
+            } catch (err) {
+                console.error("Failed to create goal", err);
+            }
+        }
+
+        async function adjustGoalProgress(id, minutesToAdd) {
+            const goal = allGoals.find(g => g.id === id);
+            if (!goal) return;
+
+            const newMinutes = Math.max(0, goal.current_minutes + minutesToAdd);
+            try {
+                await apiRequest(`/goals/${id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ current_minutes: newMinutes })
+                });
+                showToast('Goal progress updated.');
+                loadGoals();
+            } catch (err) {
+                console.error("Failed to update goal progress", err);
+            }
+        }
+
+        async function deactivateGoal(id) {
+            if (!confirm('Are you sure you want to remove this weekly goal?')) return;
+            try {
+                await apiRequest(`/goals/${id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ is_active: false })
+                });
+                showToast('Weekly goal deleted.');
+                loadGoals();
+            } catch (err) {
+                console.error("Failed to deactivate goal", err);
+            }
+        }
+
+
+        // ============================================================
+        // SIDEBAR NAVIGATION — switches panels without page reload
+        // ============================================================
+        function switchHubTab(btn, panelId) {
+            document.querySelectorAll('.hub-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(panelId).classList.add('active');
+            if (panelId === 'todos-tab') loadTodos();
+            else if (panelId === 'notes-tab') loadNotes();
+            else if (panelId === 'pomodoro-tab') loadPomodoroTab();
+            else if (panelId === 'goals-tab') loadGoals();
+            else if (panelId === 'progress-tab') loadProgressPanel();
+            else if (panelId === 'scheduler-tab') initSchedulerPanel();
+        }
+
+
+        // ============================================================
+        // MODULE 5: PROGRESS DASHBOARD
+        // ============================================================
+        async function loadProgressPanel() {
+            try {
+                const data = await apiRequest('/progress/weekly');
+                if (!data) return;
+
+                // KPI cards
+                document.getElementById('prog-xp').textContent = data.xp || 0;
+                document.getElementById('prog-streak').textContent = (data.streak_count || 0) + ' days';
+                document.getElementById('prog-tasks-done').textContent = data.task_totals?.total_completed || 0;
+                document.getElementById('prog-pomo-mins').textContent = (data.pomo_totals?.pomo_minutes || 0) + 'm';
+
+                // Bar charts
+                renderBarChart('tasks-bar-chart', data.tasks_per_day || [], 'tasks_done', 'tasks-bar');
+                renderBarChart('pomo-bar-chart', data.minutes_per_day || [], 'minutes_studied', 'pomo-bar');
+
+                // Goals progress
+                renderProgressGoals(data.goals || []);
+            } catch (err) {
+                console.error('Failed to load progress', err);
+            }
+        }
+
+        function renderBarChart(containerId, data, valueKey, barClass) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = '<div style="width:100%;text-align:center;color:var(--text-secondary);font-size:0.85rem;padding-top:40px;">No data for the past 7 days.</div>';
+                return;
+            }
+
+            const maxVal = Math.max(...data.map(d => Number(d[valueKey]) || 0), 1);
+
+            data.forEach(item => {
+                const val = Number(item[valueKey]) || 0;
+                const heightPct = Math.round((val / maxVal) * 100);
+                const group = document.createElement('div');
+                group.className = 'bar-group';
+                group.innerHTML = `
+                    <span class="bar-val">${val}</span>
+                    <div class="bar ${barClass}" style="height: ${heightPct}%;"></div>
+                    <span class="bar-lbl">${escapeHTML(item.day_label)}</span>
+                `;
+                container.appendChild(group);
+            });
+        }
+
+        function renderProgressGoals(goals) {
+            const container = document.getElementById('progress-goals-list');
+            if (goals.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-secondary);font-size:var(--font-size-sm);">No active weekly goals. Go to Goals to set one!</p>';
+                return;
+            }
+            container.innerHTML = goals.map(g => {
+                const pct = Math.min(Math.round((g.current_minutes / g.target_minutes) * 100), 100) || 0;
+                const curH = (g.current_minutes / 60).toFixed(1);
+                const tgtH = (g.target_minutes / 60).toFixed(1);
+                return `
+                    <div style="margin-bottom:var(--spacing-lg);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                            <span style="font-weight:600;color:var(--text-primary);font-size:var(--font-size-sm);">${escapeHTML(g.title)}</span>
+                            <span style="font-weight:700;color:var(--accent-glow);">${pct}%</span>
+                        </div>
+                        <div style="height:10px;background:var(--border-color);border-radius:var(--border-radius-pill);overflow:hidden;">
+                            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent-glow),var(--accent-cyan));border-radius:var(--border-radius-pill);"></div>
+                        </div>
+                        <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;">${curH}h / ${tgtH}h this week</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+
+        // ============================================================
+        // MODULE 6: AI TASK SCHEDULER
+        // ============================================================
+        let schedulerSubjects = [];
+
+        function initSchedulerPanel() {
+            // Subjects are already managed via tags, nothing to preload
+        }
+
+        function handleSubjectTagInput(event) {
+            if (event.key === 'Enter' || event.key === ',') {
+                event.preventDefault();
+                const input = document.getElementById('subject-tag-raw');
+                const val = input.value.trim().replace(',', '');
+                if (val && !schedulerSubjects.includes(val)) {
+                    schedulerSubjects.push(val);
+                    renderSubjectTags();
+                }
+                input.value = '';
+            }
+        }
+
+        function removeSubjectTag(subject) {
+            schedulerSubjects = schedulerSubjects.filter(s => s !== subject);
+            renderSubjectTags();
+        }
+
+        function renderSubjectTags() {
+            const container = document.getElementById('subjects-tag-input');
+            const rawInput = document.getElementById('subject-tag-raw');
+            // Remove all existing tags (preserve the input)
+            container.querySelectorAll('.subject-tag').forEach(t => t.remove());
+
+            schedulerSubjects.forEach(subj => {
+                const tag = document.createElement('span');
+                tag.className = 'subject-tag';
+                tag.innerHTML = `${escapeHTML(subj)} <button onclick="removeSubjectTag('${escapeHTML(subj)}')">×</button>`;
+                container.insertBefore(tag, rawInput);
+            });
+        }
+
+        async function runAIPlanner() {
+            const btn = document.getElementById('run-planner-btn');
+            const minutes = parseInt(document.getElementById('sched-minutes').value) || 60;
+            const priorityArea = document.getElementById('sched-priority').value.trim();
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+            try {
+                const result = await apiRequest('/ai/daily-plan', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        subjects: schedulerSubjects,
+                        available_minutes: minutes,
+                        priority_area: priorityArea || null
+                    })
+                });
+
+                if (!result) return;
+
+                const container = document.getElementById('planner-results');
+                if (!result.tasks_created || result.tasks_created.length === 0) {
+                    container.innerHTML = `
+                        <div class="plan-empty">
+                            <i class="fas fa-check-circle" style="color:var(--success-color);"></i>
+                            All suggested tasks already exist in your task list!
+                        </div>`;
+                } else {
+                    const priorityColors = { urgent: '#EF4444', high: '#F59E0B', medium: '#6366F1', low: '#16A34A' };
+                    container.innerHTML = `
+                        <div style="background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:var(--border-radius-md);padding:var(--spacing-md);margin-bottom:var(--spacing-lg);">
+                            <p style="color:var(--success-color);font-weight:600;margin:0;font-size:var(--font-size-sm);"><i class="fas fa-check-circle"></i> ${escapeHTML(result.plan_summary)}</p>
+                        </div>
+                        ${result.tasks_created.map(t => `
+                            <div class="plan-task-item">
+                                <div class="plan-task-icon"><i class="fas fa-book-open"></i></div>
+                                <div class="plan-task-info">
+                                    <div class="plan-task-title">${escapeHTML(t.title)}</div>
+                                    <div class="plan-task-meta"><span style="color:${priorityColors[t.priority] || '#6366F1'};font-weight:600;">${escapeHTML(t.priority)}</span> • +${t.xp_reward} XP</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <p style="font-size:var(--font-size-sm);color:var(--text-secondary);margin-top:var(--spacing-md);">Tasks have been added to your Hub → Todo list. ✅</p>
+                    `;
+                }
+                showToast(result.plan_summary, 'success');
+            } catch (err) {
+                console.error('AI Planner failed', err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic"></i> Generate Study Plan';
+            }
+        }
+    </script>
+</body>
+</html>
