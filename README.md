@@ -63,7 +63,7 @@ It ships as a containerized FastAPI backend, a PostgreSQL database, and a lightw
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/100axe001/studyflow.git
+git clone https://github.com/ishan1223/studyflow.git
 cd studyflow
 ```
 
