@@ -9,6 +9,7 @@ import random
 from jose import jwt, JWTError
 from typing import List, Optional
 import os
+import re
 from fastapi.responses import JSONResponse
 
 # --- Import our custom modules ---
@@ -22,7 +23,14 @@ from . import security
 from .db_models import User
 
 # MODIFIED: Add SentenceTransformer imports directly, as it's no longer in learning_models.py
-from sentence_transformers import SentenceTransformer, util
+try:
+    from sentence_transformers import SentenceTransformer, util
+except Exception as exc:  # pragma: no cover - defensive fallback
+    SentenceTransformer = None
+    util = None
+    SENTENCE_TRANSFORMER_IMPORT_ERROR = exc
+else:
+    SENTENCE_TRANSFORMER_IMPORT_ERROR = None
 
 # --- Basic App Setup ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -39,10 +47,65 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-similarity_model = SentenceTransformer(
-    'all-MiniLM-L6-v2',
-    cache_folder=os.environ.get('TRANSFORMERS_CACHE', './model_cache')
-)
+similarity_model = None
+similarity_model_error = None
+
+
+def _load_similarity_model():
+    global similarity_model, similarity_model_error
+    if similarity_model is not None:
+        return similarity_model
+
+    if SentenceTransformer is None or util is None:
+        similarity_model_error = SENTENCE_TRANSFORMER_IMPORT_ERROR or RuntimeError("sentence-transformers is not available")
+        return None
+
+    try:
+        similarity_model = SentenceTransformer(
+            'all-MiniLM-L6-v2',
+            cache_folder=os.environ.get('TRANSFORMERS_CACHE', './model_cache')
+        )
+        similarity_model_error = None
+        return similarity_model
+    except Exception as exc:  # pragma: no cover - defensive fallback
+        similarity_model_error = exc
+        logging.warning("Falling back to heuristic similarity scoring because the embedding model could not be loaded: %s", exc)
+        return None
+
+
+def _token_overlap_similarity(text_a: str, text_b: str) -> float:
+    if not text_a or not text_b:
+        return 0.0
+
+    normalized_a = re.findall(r"\w+", text_a.lower())
+    normalized_b = re.findall(r"\w+", text_b.lower())
+    if not normalized_a or not normalized_b:
+        return 0.0
+
+    if normalized_a == normalized_b:
+        return 1.0
+
+    set_a = set(normalized_a)
+    set_b = set(normalized_b)
+    if not set_a or not set_b:
+        return 0.0
+
+    overlap = len(set_a & set_b) / len(set_a | set_b)
+    return round(overlap, 4)
+
+
+def compute_similarity_score(text_a: str, text_b: str) -> float:
+    model = _load_similarity_model()
+    if model is None or util is None:
+        return _token_overlap_similarity(text_a, text_b)
+
+    try:
+        embedding1 = model.encode(text_a.lower().strip(), convert_to_tensor=True)
+        embedding2 = model.encode(text_b.lower().strip(), convert_to_tensor=True)
+        return float(util.cos_sim(embedding1, embedding2).item())
+    except Exception as exc:  # pragma: no cover - defensive fallback
+        logging.warning("Embedding similarity computation failed, falling back to heuristic scoring: %s", exc)
+        return _token_overlap_similarity(text_a, text_b)
 
 # --- Pydantic Models for API Data (Unchanged) ---
 class UserCreate(BaseModel):
@@ -245,9 +308,7 @@ def submit_answer(submission: AnswerSubmission, current_user: User = Depends(get
         correct_answer = result['correct_answer_text']
         
         # Perform similarity check directly in the endpoint
-        embedding1 = similarity_model.encode(submission.user_answer.lower().strip(), convert_to_tensor=True)
-        embedding2 = similarity_model.encode(correct_answer.lower().strip(), convert_to_tensor=True)
-        similarity_score = util.cos_sim(embedding1, embedding2).item()
+        similarity_score = compute_similarity_score(submission.user_answer, correct_answer)
         is_correct = similarity_score > 0.8
         
         # Call the new, enhanced update function
